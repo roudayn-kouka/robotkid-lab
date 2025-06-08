@@ -1,32 +1,48 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, List, BarChart3, Users, Target, Zap } from 'lucide-react';
-
 const Index = () => {
-  const quickStats = [
-    { label: 'Total Games', value: '12', icon: List, color: 'text-blue-600' },
-    { label: 'Active Players', value: '1,247', icon: Users, color: 'text-green-600' },
-    { label: 'Success Rate', value: '78.5%', icon: Target, color: 'text-purple-600' },
-    { label: 'Avg Session', value: '4m 15s', icon: Zap, color: 'text-orange-600' },
-  ];
-
-  const recentGames = [
-    { name: 'Robot Basics Adventure', created: '2 days ago', status: 'Active' },
-    { name: 'Mathematical Maze', created: '5 days ago', status: 'Active' },
-    { name: 'Science Circuit Quest', created: '1 week ago', status: 'Draft' },
-  ];
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
+  const quickStats = [{
+    label: 'Total Games',
+    value: '12',
+    icon: List,
+    color: 'text-blue-600'
+  }, {
+    label: 'Active Players',
+    value: '1,247',
+    icon: Users,
+    color: 'text-green-600'
+  }, {
+    label: 'Success Rate',
+    value: '78.5%',
+    icon: Target,
+    color: 'text-purple-600'
+  }, {
+    label: 'Avg Session',
+    value: '4m 15s',
+    icon: Zap,
+    color: 'text-orange-600'
+  }];
+  const recentGames = [{
+    name: 'Robot Basics Adventure',
+    created: '2 days ago',
+    status: 'Active'
+  }, {
+    name: 'Mathematical Maze',
+    created: '5 days ago',
+    status: 'Active'
+  }, {
+    name: 'Science Circuit Quest',
+    created: '1 week ago',
+    status: 'Draft'
+  }];
+  return <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
       <div className="container mx-auto px-4 py-6 space-y-8">
         {/* Hero Section */}
         <div className="text-center py-12">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-4">
-            RoboEdu Admin Platform
-          </h1>
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-4">RoboKidLab admin section </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
             Create engaging educational robot-based games with customizable circuits, 
             track student performance, and analyze learning outcomes.
@@ -49,8 +65,7 @@ const Index = () => {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {quickStats.map((stat, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow">
+          {quickStats.map((stat, index) => <Card key={index} className="hover:shadow-lg transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -60,8 +75,7 @@ const Index = () => {
                   <stat.icon className={`h-8 w-8 ${stat.color}`} />
                 </div>
               </CardContent>
-            </Card>
-          ))}
+            </Card>)}
         </div>
 
         {/* Quick Actions & Recent Games */}
@@ -100,23 +114,17 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {recentGames.map((game, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                {recentGames.map((game, index) => <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                     <div>
                       <p className="font-medium">{game.name}</p>
                       <p className="text-sm text-muted-foreground">Created {game.created}</p>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        game.status === 'Active' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
+                      <span className={`px-2 py-1 rounded-full text-xs ${game.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
                         {game.status}
                       </span>
                     </div>
-                  </div>
-                ))}
+                  </div>)}
               </div>
               <Link to="/games">
                 <Button variant="outline" className="w-full mt-4">
@@ -160,8 +168,6 @@ const Index = () => {
           </Card>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
