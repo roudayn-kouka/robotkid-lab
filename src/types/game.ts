@@ -6,6 +6,15 @@ export interface Cell {
   isInformative: boolean;
   content: string;
   imageUrl: string;
+  isPath: boolean;
+  pathOrder: number;
+  connections: number[];
+}
+
+export interface InformativeCell {
+  id: string;
+  content: string;
+  imageUrl: string;
 }
 
 export interface Game {
@@ -15,6 +24,7 @@ export interface Game {
   totalCircuitCells: number;
   totalInfoCells: number;
   gridConfig: Cell[];
+  informativeCells: InformativeCell[];
   createdAt: Date;
 }
 

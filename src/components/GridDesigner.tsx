@@ -2,17 +2,17 @@
 import React, { useState } from 'react';
 import { Cell, GridDimensions } from '@/types/game';
 import { cn } from '@/lib/utils';
-import { Upload, Palette, Type, Info } from 'lucide-react';
+import { RotateCcw, Play, Square } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 
 interface GridDesignerProps {
   dimensions: GridDimensions;
   cells: Cell[];
   onCellUpdate: (x: number, y: number, updates: Partial<Cell>) => void;
   onDimensionsChange: (dimensions: GridDimensions) => void;
+  targetPathCells: number;
 }
 
 const GridDesigner: React.FC<GridDesignerProps> = ({
@@ -20,9 +20,11 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
   cells,
   onCellUpdate,
   onDimensionsChange,
+  targetPathCells,
 }) => {
   const [selectedCell, setSelectedCell] = useState<{ x: number; y: number } | null>(null);
   const [selectedColor, setSelectedColor] = useState('#3b82f6');
+  const [isCreatingPath, setIsCreatingPath] = useState(false);
 
   const colors = [
     '#3b82f6', '#ef4444', '#10b981', '#f59e0b',
@@ -36,12 +38,46 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
       color: '#f8f9fa',
       isInformative: false,
       content: '',
-      imageUrl: ''
+      imageUrl: '',
+      isPath: false,
+      pathOrder: -1,
+      connections: []
     };
   };
 
   const handleCellClick = (x: number, y: number) => {
-    setSelectedCell({ x, y });
+    if (isCreatingPath) {
+      const cellData = getCellData(x, y);
+      const pathCells = cells.filter(cell => cell.isPath);
+      
+      if (!cellData.isPath && pathCells.length < targetPathCells) {
+        // Add to path
+        const pathOrder = pathCells.length;
+        onCellUpdate(x, y, { 
+          isPath: true, 
+          pathOrder,
+          color: selectedColor 
+        });
+      } else if (cellData.isPath) {
+        // Remove from path
+        onCellUpdate(x, y, { 
+          isPath: false, 
+          pathOrder: -1,
+          color: '#f8f9fa' 
+        });
+        
+        // Reorder remaining path cells
+        const remainingCells = cells.filter(cell => 
+          cell.isPath && !(cell.x === x && cell.y === y)
+        ).sort((a, b) => a.pathOrder - b.pathOrder);
+        
+        remainingCells.forEach((cell, index) => {
+          onCellUpdate(cell.x, cell.y, { pathOrder: index });
+        });
+      }
+    } else {
+      setSelectedCell({ x, y });
+    }
   };
 
   const handleColorSelect = (color: string) => {
@@ -51,12 +87,23 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
     }
   };
 
+  const clearPath = () => {
+    cells.filter(cell => cell.isPath).forEach(cell => {
+      onCellUpdate(cell.x, cell.y, { 
+        isPath: false, 
+        pathOrder: -1,
+        color: '#f8f9fa' 
+      });
+    });
+  };
+
   const selectedCellData = selectedCell ? getCellData(selectedCell.x, selectedCell.y) : null;
+  const pathCells = cells.filter(cell => cell.isPath);
 
   return (
     <div className="space-y-6">
       {/* Grid Dimensions Controls */}
-      <div className="flex space-x-4">
+      <div className="flex space-x-4 items-end">
         <div>
           <Label htmlFor="rows">Rows</Label>
           <Input
@@ -81,6 +128,29 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
             className="w-20"
           />
         </div>
+        <div className="flex space-x-2">
+          <Button
+            variant={isCreatingPath ? "default" : "outline"}
+            onClick={() => setIsCreatingPath(!isCreatingPath)}
+          >
+            <Play className="h-4 w-4 mr-2" />
+            {isCreatingPath ? 'Stop Path Creation' : 'Create Path'}
+          </Button>
+          <Button variant="outline" onClick={clearPath}>
+            <RotateCcw className="h-4 w-4 mr-2" />
+            Clear Path
+          </Button>
+        </div>
+      </div>
+
+      {/* Path Status */}
+      <div className="bg-muted p-3 rounded-lg">
+        <p className="text-sm">
+          <strong>Path Status:</strong> {pathCells.length} / {targetPathCells} cells
+          {isCreatingPath && (
+            <span className="ml-2 text-primary">Click cells to add to path</span>
+          )}
+        </p>
       </div>
 
       <div className="flex gap-6">
@@ -106,16 +176,20 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
                       'aspect-square rounded-md border-2 cursor-pointer transition-all duration-200 relative overflow-hidden',
                       isSelected
                         ? 'border-primary ring-2 ring-primary/20'
-                        : 'border-border hover:border-primary/50'
+                        : cellData.isPath
+                        ? 'border-green-500'
+                        : 'border-border hover:border-primary/50',
+                      isCreatingPath && 'hover:ring-2 hover:ring-primary/30'
                     )}
                     style={{ backgroundColor: cellData.color }}
                     onClick={() => handleCellClick(col, row)}
                   >
-                    {cellData.isInformative && (
-                      <div className="absolute top-1 right-1">
-                        <Info className="h-3 w-3 text-white drop-shadow" />
+                    {cellData.isPath && (
+                      <div className="absolute top-1 left-1 bg-green-600 text-white text-xs px-1 rounded">
+                        {cellData.pathOrder + 1}
                       </div>
                     )}
+                    
                     {cellData.imageUrl && (
                       <img
                         src={cellData.imageUrl}
@@ -123,6 +197,7 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
                         className="w-full h-full object-cover opacity-80"
                       />
                     )}
+                    
                     <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-1 text-center">
                       {col},{row}
                     </div>
@@ -141,6 +216,11 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
             <div className="space-y-4">
               <div>
                 <Label>Position: ({selectedCell.x}, {selectedCell.y})</Label>
+                {selectedCellData?.isPath && (
+                  <p className="text-sm text-muted-foreground">
+                    Path Order: {selectedCellData.pathOrder + 1}
+                  </p>
+                )}
               </div>
 
               {/* Color Palette */}
@@ -161,51 +241,24 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
                 </div>
               </div>
 
-              {/* Informative Cell Toggle */}
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="informative"
-                  checked={selectedCellData?.isInformative || false}
-                  onChange={(e) => onCellUpdate(selectedCell.x, selectedCell.y, { isInformative: e.target.checked })}
-                  className="rounded"
-                />
-                <Label htmlFor="informative">Informative Cell</Label>
-              </div>
-
-              {/* Content */}
-              <div>
-                <Label htmlFor="content">Content</Label>
-                <Textarea
-                  id="content"
-                  placeholder="Enter cell content..."
-                  value={selectedCellData?.content || ''}
-                  onChange={(e) => onCellUpdate(selectedCell.x, selectedCell.y, { content: e.target.value })}
-                  className="mt-2"
-                />
-              </div>
-
-              {/* Image Upload */}
-              <div>
-                <Label>Cell Image</Label>
-                <div className="mt-2 space-y-2">
-                  <Button variant="outline" size="sm" className="w-full">
-                    <Upload className="h-4 w-4 mr-2" />
-                    Upload Image
-                  </Button>
-                  {selectedCellData?.imageUrl && (
-                    <img
-                      src={selectedCellData.imageUrl}
-                      alt="Cell preview"
-                      className="w-full h-20 object-cover rounded border"
-                    />
-                  )}
+              {/* Path Cell Info */}
+              {selectedCellData?.isPath && (
+                <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                  <div className="flex items-center space-x-2">
+                    <Square className="h-4 w-4 text-green-600" />
+                    <span className="text-sm font-medium text-green-800">
+                      Path Cell #{selectedCellData.pathOrder + 1}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           ) : (
             <div className="text-center text-muted-foreground py-8">
-              Click on a cell to edit its properties
+              {isCreatingPath 
+                ? "Click on cells to create the robot path"
+                : "Click on a cell to edit its properties"
+              }
             </div>
           )}
         </div>

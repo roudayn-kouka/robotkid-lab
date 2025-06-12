@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Save, Eye } from 'lucide-react';
 import GridDesigner from '@/components/GridDesigner';
-import { Cell, Game, GridDimensions } from '@/types/game';
+import InformativeCellsEditor from '@/components/InformativeCellsEditor';
+import { Cell, Game, GridDimensions, InformativeCell } from '@/types/game';
 import { toast } from '@/hooks/use-toast';
 
 const CreateGame = () => {
@@ -18,11 +19,29 @@ const CreateGame = () => {
   });
 
   const [dimensions, setDimensions] = useState<GridDimensions>({
-    rows: 3,
-    columns: 3,
+    rows: 5,
+    columns: 5,
   });
 
   const [cells, setCells] = useState<Cell[]>([]);
+  const [informativeCells, setInformativeCells] = useState<InformativeCell[]>([]);
+
+  // Initialize informative cells when count changes
+  React.useEffect(() => {
+    const currentCount = informativeCells.length;
+    const targetCount = gameData.totalInfoCells;
+    
+    if (targetCount > currentCount) {
+      const newCells = Array.from({ length: targetCount - currentCount }, (_, i) => ({
+        id: `info-${currentCount + i + 1}`,
+        content: '',
+        imageUrl: ''
+      }));
+      setInformativeCells(prev => [...prev, ...newCells]);
+    } else if (targetCount < currentCount) {
+      setInformativeCells(prev => prev.slice(0, targetCount));
+    }
+  }, [gameData.totalInfoCells, informativeCells.length]);
 
   const handleCellUpdate = (x: number, y: number, updates: Partial<Cell>) => {
     setCells(prevCells => {
@@ -33,7 +52,10 @@ const CreateGame = () => {
         color: '#f8f9fa',
         isInformative: false,
         content: '',
-        imageUrl: ''
+        imageUrl: '',
+        isPath: false,
+        pathOrder: -1,
+        connections: []
       };
 
       if (existingIndex >= 0) {
@@ -46,6 +68,12 @@ const CreateGame = () => {
     });
   };
 
+  const handleInformativeCellUpdate = (id: string, updates: Partial<InformativeCell>) => {
+    setInformativeCells(prev => 
+      prev.map(cell => cell.id === id ? { ...cell, ...updates } : cell)
+    );
+  };
+
   const handleSave = () => {
     if (!gameData.name.trim()) {
       toast({
@@ -56,9 +84,20 @@ const CreateGame = () => {
       return;
     }
 
+    const pathCells = cells.filter(cell => cell.isPath);
+    if (pathCells.length !== gameData.totalCircuitCells) {
+      toast({
+        title: "Validation Error",
+        description: `Please create a path with exactly ${gameData.totalCircuitCells} cells`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     const game: Omit<Game, 'id' | 'createdAt'> = {
       ...gameData,
       gridConfig: cells,
+      informativeCells,
     };
 
     console.log('Saving game:', game);
@@ -75,7 +114,7 @@ const CreateGame = () => {
     });
   };
 
-  const informativeCellCount = cells.filter(cell => cell.isInformative).length;
+  const pathCellCount = cells.filter(cell => cell.isPath).length;
 
   return (
     <div className="container mx-auto px-4 py-6 space-y-6">
@@ -120,16 +159,29 @@ const CreateGame = () => {
               />
             </div>
             <div>
-              <Label>Total Circuit Cells</Label>
-              <div className="text-lg font-semibold text-primary">
-                {dimensions.rows * dimensions.columns}
+              <Label htmlFor="circuitCells">Circuit Path Cells</Label>
+              <Input
+                id="circuitCells"
+                type="number"
+                min="3"
+                max="20"
+                value={gameData.totalCircuitCells}
+                onChange={(e) => setGameData({ ...gameData, totalCircuitCells: parseInt(e.target.value) || 3 })}
+              />
+              <div className="text-sm text-muted-foreground mt-1">
+                Created: {pathCellCount}
               </div>
             </div>
             <div>
-              <Label>Informative Cells</Label>
-              <div className="text-lg font-semibold text-primary">
-                {informativeCellCount}
-              </div>
+              <Label htmlFor="infoCells">Informative Cells</Label>
+              <Input
+                id="infoCells"
+                type="number"
+                min="1"
+                max="10"
+                value={gameData.totalInfoCells}
+                onChange={(e) => setGameData({ ...gameData, totalInfoCells: parseInt(e.target.value) || 1 })}
+              />
             </div>
           </div>
         </CardContent>
@@ -138,7 +190,7 @@ const CreateGame = () => {
       {/* Circuit Designer */}
       <Card>
         <CardHeader>
-          <CardTitle>Circuit Designer</CardTitle>
+          <CardTitle>Circuit Path Designer</CardTitle>
         </CardHeader>
         <CardContent>
           <GridDesigner
@@ -146,6 +198,20 @@ const CreateGame = () => {
             cells={cells}
             onCellUpdate={handleCellUpdate}
             onDimensionsChange={setDimensions}
+            targetPathCells={gameData.totalCircuitCells}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Informative Cells Editor */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Informative Cells Content</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <InformativeCellsEditor
+            informativeCells={informativeCells}
+            onUpdate={handleInformativeCellUpdate}
           />
         </CardContent>
       </Card>
