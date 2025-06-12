@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -199,6 +198,7 @@ const CreateGame = () => {
             onCellUpdate={handleCellUpdate}
             onDimensionsChange={setDimensions}
             targetPathCells={gameData.totalCircuitCells}
+            targetInfoCells={gameData.totalInfoCells}
           />
         </CardContent>
       </Card>

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Cell, GridDimensions } from '@/types/game';
 import { cn } from '@/lib/utils';
-import { RotateCcw, Move, Square } from 'lucide-react';
+import { RotateCcw, Move, Square, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,6 +13,7 @@ interface GridDesignerProps {
   onCellUpdate: (x: number, y: number, updates: Partial<Cell>) => void;
   onDimensionsChange: (dimensions: GridDimensions) => void;
   targetPathCells: number;
+  targetInfoCells: number;
 }
 
 const GridDesigner: React.FC<GridDesignerProps> = ({
@@ -21,10 +22,11 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
   onCellUpdate,
   onDimensionsChange,
   targetPathCells,
+  targetInfoCells,
 }) => {
   const [selectedCell, setSelectedCell] = useState<{ x: number; y: number } | null>(null);
   const [selectedColor, setSelectedColor] = useState('#3b82f6');
-  const [draggedTile, setDraggedTile] = useState<number | null>(null);
+  const [draggedTile, setDraggedTile] = useState<{ type: 'path' | 'info'; number: number } | null>(null);
 
   const colors = [
     '#3b82f6', '#ef4444', '#10b981', '#f59e0b',
@@ -45,8 +47,8 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
     };
   };
 
-  const handleTileDragStart = (tileNumber: number) => {
-    setDraggedTile(tileNumber);
+  const handleTileDragStart = (type: 'path' | 'info', tileNumber: number) => {
+    setDraggedTile({ type, number: tileNumber });
   };
 
   const handleCellDragOver = (e: React.DragEvent) => {
@@ -63,16 +65,22 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
         onCellUpdate(x, y, { 
           isPath: false, 
           pathOrder: -1,
+          isInformative: false,
           color: '#f8f9fa' 
         });
       }
       
       // Remove the dragged tile from its current position
-      const existingTileCell = cells.find(cell => cell.pathOrder === draggedTile - 1);
+      const existingTileCell = cells.find(cell => 
+        draggedTile.type === 'path' 
+          ? cell.pathOrder === draggedTile.number - 1 && !cell.isInformative
+          : cell.pathOrder === draggedTile.number - 1 && cell.isInformative
+      );
       if (existingTileCell) {
         onCellUpdate(existingTileCell.x, existingTileCell.y, { 
           isPath: false, 
           pathOrder: -1,
+          isInformative: false,
           color: '#f8f9fa' 
         });
       }
@@ -80,8 +88,9 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
       // Place the tile at the new position
       onCellUpdate(x, y, { 
         isPath: true, 
-        pathOrder: draggedTile - 1,
-        color: selectedColor 
+        pathOrder: draggedTile.number - 1,
+        isInformative: draggedTile.type === 'info',
+        color: draggedTile.type === 'info' ? '#ef4444' : selectedColor 
       });
       
       setDraggedTile(null);
@@ -96,7 +105,7 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
     setSelectedColor(color);
     if (selectedCell) {
       const cellData = getCellData(selectedCell.x, selectedCell.y);
-      if (cellData.isPath) {
+      if (cellData.isPath && !cellData.isInformative) {
         onCellUpdate(selectedCell.x, selectedCell.y, { color });
       }
     }
@@ -107,6 +116,7 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
       onCellUpdate(cell.x, cell.y, { 
         isPath: false, 
         pathOrder: -1,
+        isInformative: false,
         color: '#f8f9fa' 
       });
     });
@@ -114,8 +124,14 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
 
   const selectedCellData = selectedCell ? getCellData(selectedCell.x, selectedCell.y) : null;
   const pathCells = cells.filter(cell => cell.isPath).sort((a, b) => a.pathOrder - b.pathOrder);
-  const availableTiles = Array.from({ length: targetPathCells }, (_, i) => i + 1)
-    .filter(tileNum => !pathCells.find(cell => cell.pathOrder === tileNum - 1));
+  const regularPathCells = pathCells.filter(cell => !cell.isInformative);
+  const informativeCells = pathCells.filter(cell => cell.isInformative);
+  
+  const availablePathTiles = Array.from({ length: targetPathCells }, (_, i) => i + 1)
+    .filter(tileNum => !regularPathCells.find(cell => cell.pathOrder === tileNum - 1));
+  
+  const availableInfoTiles = Array.from({ length: targetInfoCells }, (_, i) => i + 1)
+    .filter(tileNum => !informativeCells.find(cell => cell.pathOrder === tileNum - 1));
 
   return (
     <div className="space-y-6">
@@ -154,31 +170,59 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
       {/* Path Status */}
       <div className="bg-muted p-3 rounded-lg">
         <p className="text-sm">
-          <strong>Path Status:</strong> {pathCells.length} / {targetPathCells} tiles placed
+          <strong>Circuit Status:</strong> {regularPathCells.length} / {targetPathCells} path tiles placed, {informativeCells.length} / {targetInfoCells} informative tiles placed
         </p>
       </div>
 
       <div className="flex gap-6">
         {/* Available Tiles */}
         <div className="w-64 space-y-4">
-          <h3 className="text-lg font-semibold">Available Path Tiles</h3>
-          <div className="grid grid-cols-3 gap-2 p-4 bg-muted rounded-lg">
-            {availableTiles.map((tileNumber) => (
-              <div
-                key={tileNumber}
-                className="aspect-square bg-primary text-primary-foreground rounded-md border-2 border-primary cursor-grab active:cursor-grabbing flex items-center justify-center font-bold transition-transform hover:scale-105"
-                draggable
-                onDragStart={() => handleTileDragStart(tileNumber)}
-              >
-                {tileNumber}
-              </div>
-            ))}
+          <h3 className="text-lg font-semibold">Available Circuit Tiles</h3>
+          
+          {/* Regular Path Tiles */}
+          <div>
+            <h4 className="text-md font-medium mb-2">Path Tiles</h4>
+            <div className="grid grid-cols-3 gap-2 p-4 bg-muted rounded-lg">
+              {availablePathTiles.map((tileNumber) => (
+                <div
+                  key={`path-${tileNumber}`}
+                  className="aspect-square bg-primary text-primary-foreground rounded-md border-2 border-primary cursor-grab active:cursor-grabbing flex items-center justify-center font-bold transition-transform hover:scale-105"
+                  draggable
+                  onDragStart={() => handleTileDragStart('path', tileNumber)}
+                >
+                  {tileNumber}
+                </div>
+              ))}
+            </div>
+            {availablePathTiles.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-2">
+                All path tiles placed
+              </p>
+            )}
           </div>
-          {availableTiles.length === 0 && (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              All tiles have been placed
-            </p>
-          )}
+
+          {/* Informative Tiles */}
+          <div>
+            <h4 className="text-md font-medium mb-2">Informative Tiles</h4>
+            <div className="grid grid-cols-3 gap-2 p-4 bg-muted rounded-lg">
+              {availableInfoTiles.map((tileNumber) => (
+                <div
+                  key={`info-${tileNumber}`}
+                  className="aspect-square bg-red-500 text-white rounded-md border-2 border-red-600 cursor-grab active:cursor-grabbing flex items-center justify-center font-bold transition-transform hover:scale-105 relative"
+                  draggable
+                  onDragStart={() => handleTileDragStart('info', tileNumber)}
+                >
+                  <Info className="h-3 w-3 absolute top-1 left-1" />
+                  {tileNumber}
+                </div>
+              ))}
+            </div>
+            {availableInfoTiles.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-2">
+                All informative tiles placed
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Grid */}
@@ -204,7 +248,9 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
                       isSelected
                         ? 'border-primary ring-2 ring-primary/20'
                         : cellData.isPath
-                        ? 'border-green-500'
+                        ? cellData.isInformative
+                          ? 'border-red-500'
+                          : 'border-green-500'
                         : 'border-border hover:border-primary/50',
                       'hover:ring-2 hover:ring-primary/30'
                     )}
@@ -214,7 +260,11 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
                     onDrop={(e) => handleCellDrop(e, col, row)}
                   >
                     {cellData.isPath && (
-                      <div className="absolute top-1 left-1 bg-green-600 text-white text-xs px-1 rounded z-10">
+                      <div className={cn(
+                        "absolute top-1 left-1 text-white text-xs px-1 rounded z-10 flex items-center gap-1",
+                        cellData.isInformative ? "bg-red-600" : "bg-green-600"
+                      )}>
+                        {cellData.isInformative && <Info className="h-2 w-2" />}
                         {cellData.pathOrder + 1}
                       </div>
                     )}
@@ -247,13 +297,13 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
                 <Label>Position: ({selectedCell.x}, {selectedCell.y})</Label>
                 {selectedCellData?.isPath && (
                   <p className="text-sm text-muted-foreground">
-                    Path Order: {selectedCellData.pathOrder + 1}
+                    {selectedCellData.isInformative ? 'Informative' : 'Path'} Tile #{selectedCellData.pathOrder + 1}
                   </p>
                 )}
               </div>
 
-              {/* Color Palette - only for path cells */}
-              {selectedCellData?.isPath && (
+              {/* Color Palette - only for regular path cells */}
+              {selectedCellData?.isPath && !selectedCellData.isInformative && (
                 <div>
                   <Label>Tile Color</Label>
                   <div className="grid grid-cols-4 gap-2 mt-2">
@@ -273,12 +323,24 @@ const GridDesigner: React.FC<GridDesignerProps> = ({
               )}
 
               {/* Path Cell Info */}
-              {selectedCellData?.isPath && (
+              {selectedCellData?.isPath && !selectedCellData.isInformative && (
                 <div className="p-3 bg-green-50 rounded-lg border border-green-200">
                   <div className="flex items-center space-x-2">
                     <Square className="h-4 w-4 text-green-600" />
                     <span className="text-sm font-medium text-green-800">
                       Path Tile #{selectedCellData.pathOrder + 1}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Informative Cell Info */}
+              {selectedCellData?.isPath && selectedCellData.isInformative && (
+                <div className="p-3 bg-red-50 rounded-lg border border-red-200">
+                  <div className="flex items-center space-x-2">
+                    <Info className="h-4 w-4 text-red-600" />
+                    <span className="text-sm font-medium text-red-800">
+                      Informative Tile #{selectedCellData.pathOrder + 1}
                     </span>
                   </div>
                 </div>
