@@ -10,6 +10,7 @@ import CreateGame from "./pages/CreateGame";
 import GameLibrary from "./pages/GameLibrary";
 import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
+import Landing from "./pages/Landing";
 
 const queryClient = new QueryClient();
 
@@ -20,12 +21,32 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <div className="min-h-screen bg-background">
-          <Navigation />
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/create-game" element={<CreateGame />} />
-            <Route path="/games" element={<GameLibrary />} />
-            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/auth" element={<Landing />} />
+            <Route path="/" element={
+              <>
+                <Navigation />
+                <Index />
+              </>
+            } />
+            <Route path="/create-game" element={
+              <>
+                <Navigation />
+                <CreateGame />
+              </>
+            } />
+            <Route path="/games" element={
+              <>
+                <Navigation />
+                <GameLibrary />
+              </>
+            } />
+            <Route path="/analytics" element={
+              <>
+                <Navigation />
+                <Analytics />
+              </>
+            } />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
