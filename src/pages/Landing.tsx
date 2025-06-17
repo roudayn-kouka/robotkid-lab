@@ -1,5 +1,5 @@
-
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,6 +8,7 @@ import { Eye, EyeOff, Mail, Lock, User, Gamepad2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const Landing = () => {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -42,8 +43,8 @@ const Landing = () => {
       description: isLogin ? "You have been logged in successfully" : "Your account has been created successfully",
     });
 
-    // Here you would typically redirect to the main app
-    console.log('Authentication successful', formData);
+    // Redirect to admin section after successful authentication
+    navigate('/admin');
   };
 
   return (

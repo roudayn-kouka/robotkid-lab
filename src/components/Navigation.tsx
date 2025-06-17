@@ -7,7 +7,7 @@ const Navigation = () => {
   const location = useLocation();
 
   const navItems = [
-    { path: '/', label: 'Dashboard', icon: Home },
+    { path: '/admin', label: 'Dashboard', icon: Home },
     { path: '/create-game', label: 'Create Game', icon: Plus },
     { path: '/games', label: 'Game Library', icon: List },
     { path: '/analytics', label: 'Analytics', icon: BarChart3 },
@@ -18,7 +18,7 @@ const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
-            <Link to="/" className="text-xl font-bold text-primary">
+            <Link to="/admin" className="text-xl font-bold text-primary">
               RoboEdu Admin
             </Link>
             <div className="hidden md:flex space-x-1">
