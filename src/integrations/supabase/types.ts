@@ -9,75 +9,133 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      analytics: {
+      admin_codes: {
         Row: {
-          avg_duration: unknown | null
-          avg_moves: number | null
-          date: string
-          game_id: string | null
+          code: string
+          created_at: string | null
           id: string
-          plays: number | null
-          success_rate: number | null
+          is_active: boolean | null
         }
         Insert: {
-          avg_duration?: unknown | null
-          avg_moves?: number | null
-          date: string
-          game_id?: string | null
+          code: string
+          created_at?: string | null
           id?: string
-          plays?: number | null
-          success_rate?: number | null
+          is_active?: boolean | null
         }
         Update: {
-          avg_duration?: unknown | null
-          avg_moves?: number | null
-          date?: string
-          game_id?: string | null
+          code?: string
+          created_at?: string | null
           id?: string
-          plays?: number | null
-          success_rate?: number | null
+          is_active?: boolean | null
+        }
+        Relationships: []
+      }
+      classes: {
+        Row: {
+          class_code: string
+          created_at: string | null
+          establishment_id: string | null
+          id: string
+          name: string
+          teacher_id: string | null
+        }
+        Insert: {
+          class_code: string
+          created_at?: string | null
+          establishment_id?: string | null
+          id?: string
+          name: string
+          teacher_id?: string | null
+        }
+        Update: {
+          class_code?: string
+          created_at?: string | null
+          establishment_id?: string | null
+          id?: string
+          name?: string
+          teacher_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "analytics_game_id_fkey"
-            columns: ["game_id"]
+            foreignKeyName: "classes_establishment_id_fkey"
+            columns: ["establishment_id"]
             isOneToOne: false
-            referencedRelation: "games"
+            referencedRelation: "establishments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classes_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
       }
-      circuit_cells: {
+      establishments: {
         Row: {
-          cell_type: string
+          city: string
+          created_at: string | null
+          id: string
+          name: string
+          region: string
+        }
+        Insert: {
+          city: string
+          created_at?: string | null
+          id?: string
+          name: string
+          region: string
+        }
+        Update: {
+          city?: string
+          created_at?: string | null
+          id?: string
+          name?: string
+          region?: string
+        }
+        Relationships: []
+      }
+      game_cells: {
+        Row: {
+          audio_url: string | null
+          cell_type: Database["public"]["Enums"]["cell_type"]
+          column_index: number
           content: string | null
+          created_at: string | null
           game_id: string | null
           id: string
           image_url: string | null
-          position_x: number
-          position_y: number
+          is_obstacle: boolean | null
+          row_index: number
         }
         Insert: {
-          cell_type: string
+          audio_url?: string | null
+          cell_type: Database["public"]["Enums"]["cell_type"]
+          column_index: number
           content?: string | null
+          created_at?: string | null
           game_id?: string | null
           id?: string
           image_url?: string | null
-          position_x: number
-          position_y: number
+          is_obstacle?: boolean | null
+          row_index: number
         }
         Update: {
-          cell_type?: string
+          audio_url?: string | null
+          cell_type?: Database["public"]["Enums"]["cell_type"]
+          column_index?: number
           content?: string | null
+          created_at?: string | null
           game_id?: string | null
           id?: string
           image_url?: string | null
-          position_x?: number
-          position_y?: number
+          is_obstacle?: boolean | null
+          row_index?: number
         }
         Relationships: [
           {
-            foreignKeyName: "circuit_cells_game_id_fkey"
+            foreignKeyName: "game_cells_game_id_fkey"
             columns: ["game_id"]
             isOneToOne: false
             referencedRelation: "games"
@@ -87,34 +145,37 @@ export type Database = {
       }
       game_sessions: {
         Row: {
-          duration: unknown | null
-          end_time: string | null
+          completed_at: string | null
+          completion_time: unknown | null
           game_id: string | null
           id: string
-          moves: number | null
-          start_time: string | null
-          success: boolean | null
-          user_id: string | null
+          is_completed: boolean | null
+          is_successful: boolean | null
+          moves_used: number
+          started_at: string | null
+          student_id: string | null
         }
         Insert: {
-          duration?: unknown | null
-          end_time?: string | null
+          completed_at?: string | null
+          completion_time?: unknown | null
           game_id?: string | null
           id?: string
-          moves?: number | null
-          start_time?: string | null
-          success?: boolean | null
-          user_id?: string | null
+          is_completed?: boolean | null
+          is_successful?: boolean | null
+          moves_used: number
+          started_at?: string | null
+          student_id?: string | null
         }
         Update: {
-          duration?: unknown | null
-          end_time?: string | null
+          completed_at?: string | null
+          completion_time?: unknown | null
           game_id?: string | null
           id?: string
-          moves?: number | null
-          start_time?: string | null
-          success?: boolean | null
-          user_id?: string | null
+          is_completed?: boolean | null
+          is_successful?: boolean | null
+          moves_used?: number
+          started_at?: string | null
+          student_id?: string | null
         }
         Relationships: [
           {
@@ -125,105 +186,209 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "game_sessions_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "game_sessions_student_id_fkey"
+            columns: ["student_id"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "students"
             referencedColumns: ["id"]
           },
         ]
       }
       games: {
         Row: {
-          circuit_path_cells: number
           columns: number
           created_at: string | null
+          creator_id: string | null
+          description: string | null
           id: string
-          informative_cells: number
+          is_published: boolean | null
           max_moves: number
           name: string
           rows: number
           updated_at: string | null
-          user_id: string | null
         }
         Insert: {
-          circuit_path_cells: number
-          columns: number
-          created_at?: string | null
-          id?: string
-          informative_cells: number
-          max_moves: number
-          name: string
-          rows: number
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          circuit_path_cells?: number
           columns?: number
           created_at?: string | null
+          creator_id?: string | null
+          description?: string | null
           id?: string
-          informative_cells?: number
+          is_published?: boolean | null
+          max_moves?: number
+          name: string
+          rows?: number
+          updated_at?: string | null
+        }
+        Update: {
+          columns?: number
+          created_at?: string | null
+          creator_id?: string | null
+          description?: string | null
+          id?: string
+          is_published?: boolean | null
           max_moves?: number
           name?: string
           rows?: number
           updated_at?: string | null
-          user_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "games_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "games_creator_id_fkey"
+            columns: ["creator_id"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
       }
-      todos: {
+      parent_student_relations: {
         Row: {
           created_at: string | null
-          id: number
-          is_complete: boolean | null
-          task: string
+          id: string
+          parent_id: string | null
+          student_id: string | null
         }
         Insert: {
           created_at?: string | null
-          id?: number
-          is_complete?: boolean | null
-          task: string
+          id?: string
+          parent_id?: string | null
+          student_id?: string | null
         }
         Update: {
           created_at?: string | null
-          id?: number
-          is_complete?: boolean | null
-          task?: string
+          id?: string
+          parent_id?: string | null
+          student_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "parent_student_relations_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parent_student_relations_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      users: {
+      profiles: {
         Row: {
           created_at: string | null
           email: string
-          full_name: string | null
+          full_name: string
           id: string
-          phone: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           email: string
-          full_name?: string | null
+          full_name: string
           id: string
-          phone?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           email?: string
-          full_name?: string | null
+          full_name?: string
           id?: string
-          phone?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
         }
         Relationships: []
+      }
+      student_performances: {
+        Row: {
+          average_completion_time: unknown | null
+          best_score: number | null
+          created_at: string | null
+          game_id: string | null
+          id: string
+          last_played_at: string | null
+          student_id: string | null
+          successful_attempts: number | null
+          total_attempts: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          average_completion_time?: unknown | null
+          best_score?: number | null
+          created_at?: string | null
+          game_id?: string | null
+          id?: string
+          last_played_at?: string | null
+          student_id?: string | null
+          successful_attempts?: number | null
+          total_attempts?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          average_completion_time?: unknown | null
+          best_score?: number | null
+          created_at?: string | null
+          game_id?: string | null
+          id?: string
+          last_played_at?: string | null
+          student_id?: string | null
+          successful_attempts?: number | null
+          total_attempts?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_performances_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_performances_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      students: {
+        Row: {
+          class_id: string | null
+          created_at: string | null
+          full_name: string
+          id: string
+          student_code: string
+        }
+        Insert: {
+          class_id?: string | null
+          created_at?: string | null
+          full_name: string
+          id?: string
+          student_code: string
+        }
+        Update: {
+          class_id?: string | null
+          created_at?: string | null
+          full_name?: string
+          id?: string
+          student_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "students_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -240,6 +405,10 @@ export type Database = {
           cols: number
         }
         Returns: string
+      }
+      get_current_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: Database["public"]["Enums"]["app_role"]
       }
       get_game_performance: {
         Args: { days_param: number }
@@ -262,7 +431,8 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "teacher" | "parent"
+      cell_type: "start" | "end" | "obstacle" | "circuit" | "informative"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -377,6 +547,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "teacher", "parent"],
+      cell_type: ["start", "end", "obstacle", "circuit", "informative"],
+    },
   },
 } as const

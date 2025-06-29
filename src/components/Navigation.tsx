@@ -1,10 +1,14 @@
 
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Plus, List, BarChart3, Settings } from 'lucide-react';
+import { Home, Plus, List, BarChart3, Settings, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
+import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
 
 const Navigation = () => {
   const location = useLocation();
+  const { signOut } = useAuth();
 
   const navItems = [
     { path: '/admin', label: 'Dashboard', icon: Home },
@@ -12,6 +16,22 @@ const Navigation = () => {
     { path: '/games', label: 'Game Library', icon: List },
     { path: '/analytics', label: 'Analytics', icon: BarChart3 },
   ];
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Déconnexion réussie",
+        description: "À bientôt !",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la déconnexion",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <nav className="bg-card border-b border-border">
@@ -46,6 +66,15 @@ const Navigation = () => {
             <button className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent">
               <Settings className="h-5 w-5" />
             </button>
+            <Button
+              onClick={handleSignOut}
+              variant="ghost"
+              size="sm"
+              className="flex items-center space-x-2"
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Déconnexion</span>
+            </Button>
           </div>
         </div>
       </div>

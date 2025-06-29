@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,11 +7,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Eye, EyeOff, Mail, Lock, User, Gamepad2, Plus, Trash2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
+import { useAdminCodes } from '@/hooks/useAdminCodes';
 
 const Landing = () => {
   const navigate = useNavigate();
+  const { signUp, signIn, user } = useAuth();
+  const { profile } = useProfile();
+  const { validateAdminCode } = useAdminCodes();
+  
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState<'admin' | 'teacher' | 'parent'>('admin');
   const [formData, setFormData] = useState({
     email: '',
@@ -26,6 +33,23 @@ const Landing = () => {
     childrenCodes: ['']
   });
 
+  // Rediriger l'utilisateur connecté vers son dashboard
+  useEffect(() => {
+    if (user && profile) {
+      switch (profile.role) {
+        case 'admin':
+          navigate('/admin');
+          break;
+        case 'teacher':
+          navigate('/teacher');
+          break;
+        case 'parent':
+          navigate('/parent');
+          break;
+      }
+    }
+  }, [user, profile, navigate]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -35,7 +59,6 @@ const Landing = () => {
 
   const handleRoleChange = (role: 'admin' | 'teacher' | 'parent') => {
     setSelectedRole(role);
-    // Reset role-specific fields when changing roles
     setFormData({
       ...formData,
       adminCode: '',
@@ -70,7 +93,7 @@ const Landing = () => {
     });
   };
 
-  const validateForm = () => {
+  const validateForm = async () => {
     if (!isLogin && formData.password !== formData.confirmPassword) {
       toast({
         title: "Erreur",
@@ -87,6 +110,18 @@ const Landing = () => {
         variant: "destructive",
       });
       return false;
+    }
+
+    if (!isLogin && selectedRole === 'admin') {
+      const isValidCode = await validateAdminCode(formData.adminCode);
+      if (!isValidCode) {
+        toast({
+          title: "Erreur",
+          description: "Code admin invalide",
+          variant: "destructive",
+        });
+        return false;
+      }
     }
 
     if (!isLogin && (selectedRole === 'teacher' || selectedRole === 'parent')) {
@@ -115,28 +150,63 @@ const Landing = () => {
     return true;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     
-    if (!validateForm()) return;
+    try {
+      if (!await validateForm()) {
+        setLoading(false);
+        return;
+      }
 
-    // Simulate authentication
-    toast({
-      title: isLogin ? "Bienvenue !" : "Compte créé !",
-      description: isLogin ? "Vous êtes connecté avec succès" : "Votre compte a été créé avec succès",
-    });
+      if (isLogin) {
+        const { error } = await signIn(formData.email, formData.password);
+        
+        if (error) {
+          toast({
+            title: "Erreur de connexion",
+            description: error.message,
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Bienvenue !",
+            description: "Vous êtes connecté avec succès",
+          });
+        }
+      } else {
+        const { error } = await signUp(formData.email, formData.password, {
+          name: formData.name,
+          selectedRole,
+          establishment: formData.establishment,
+          region: formData.region,
+          city: formData.city,
+          adminCode: formData.adminCode,
+          childrenCodes: formData.childrenCodes
+        });
 
-    // Redirect based on role
-    switch (selectedRole) {
-      case 'admin':
-        navigate('/admin');
-        break;
-      case 'teacher':
-        navigate('/teacher');
-        break;
-      case 'parent':
-        navigate('/parent');
-        break;
+        if (error) {
+          toast({
+            title: "Erreur d'inscription",
+            description: error.message,
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Compte créé !",
+            description: "Votre compte a été créé avec succès. Vérifiez votre email pour confirmer votre compte.",
+          });
+        }
+      }
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur inattendue s'est produite",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -370,9 +440,10 @@ const Landing = () => {
 
               <Button
                 type="submit"
+                disabled={loading}
                 className="w-full bg-violet hover:bg-violet/90 text-white font-medium py-2.5"
               >
-                {isLogin ? 'Se connecter' : 'Créer un compte'}
+                {loading ? 'Chargement...' : (isLogin ? 'Se connecter' : 'Créer un compte')}
               </Button>
             </form>
 
