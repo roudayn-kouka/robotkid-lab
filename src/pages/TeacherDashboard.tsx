@@ -229,7 +229,7 @@ const TeacherDashboard = () => {
                     <Badge className="bg-blue-100 text-blue-800">12 élèves</Badge>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span>À améliorer (< 60%)</span>
+                    <span>À améliorer (&lt; 60%)</span>
                     <Badge className="bg-orange-100 text-orange-800">5 élèves</Badge>
                   </div>
                 </div>
