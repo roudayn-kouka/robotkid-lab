@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,6 +10,8 @@ import GameLibrary from "./pages/GameLibrary";
 import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
 import Landing from "./pages/Landing";
+import TeacherDashboard from "./pages/TeacherDashboard";
+import ParentDashboard from "./pages/ParentDashboard";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,8 @@ const App = () => (
                 <Index />
               </>
             } />
+            <Route path="/teacher" element={<TeacherDashboard />} />
+            <Route path="/parent" element={<ParentDashboard />} />
             <Route path="/create-game" element={
               <>
                 <Navigation />
