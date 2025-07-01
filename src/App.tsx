@@ -11,7 +11,7 @@ import CreateGame from "./pages/CreateGame";
 import GameLibrary from "./pages/GameLibrary";
 import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
-import Landing from "./pages/Landing";
+import LandingPage from "./pages/LandingPage";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import ParentDashboard from "./pages/ParentDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -27,7 +27,7 @@ const App = () => (
         <BrowserRouter>
           <div className="min-h-screen bg-background">
             <Routes>
-              <Route path="/" element={<Landing />} />
+              <Route path="/" element={<LandingPage />} />
               <Route path="/admin" element={
                 <ProtectedRoute requiredRole="admin">
                   <Navigation />
