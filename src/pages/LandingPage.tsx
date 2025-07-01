@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Eye, EyeOff, Mail, Lock, User, Phone, MapPin, Instagram, LogOut, Menu, X } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Phone, MapPin, Instagram, LogOut, Menu, X, Plus, Trash2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
@@ -141,9 +141,10 @@ const LandingPage = () => {
         toast({
           title: "Erreur",
           description: "L'établissement, la région et la ville sont requis",
-        variant: "destructive",
-      });
-      return false;
+          variant: "destructive",
+        });
+        return false;
+      }
     }
 
     if (!isLogin && selectedRole === 'parent') {
