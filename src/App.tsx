@@ -12,6 +12,7 @@ import GameLibrary from "./pages/GameLibrary";
 import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
 import LandingPage from "./pages/LandingPage";
+import AuthPage from "./pages/AuthPage";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import ParentDashboard from "./pages/ParentDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -28,6 +29,7 @@ const App = () => (
           <div className="min-h-screen bg-background">
             <Routes>
               <Route path="/" element={<LandingPage />} />
+              <Route path="/auth" element={<AuthPage />} />
               <Route path="/admin" element={
                 <ProtectedRoute requiredRole="admin">
                   <Navigation />
