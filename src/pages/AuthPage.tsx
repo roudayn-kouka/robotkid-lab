@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -16,7 +15,7 @@ const AuthPage = () => {
   const navigate = useNavigate();
   const { signUp, signIn, user } = useAuth();
   const { profile } = useProfile();
-  const { validateAdminCode } = useAdminCodes();
+  const { validateAdminCode, listAdminCodes } = useAdminCodes();
   
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -33,6 +32,14 @@ const AuthPage = () => {
     city: '',
     childrenCodes: ['']
   });
+
+  // Debug: List admin codes on component mount
+  useEffect(() => {
+    const debugAdminCodes = async () => {
+      await listAdminCodes();
+    };
+    debugAdminCodes();
+  }, []);
 
   // Rediriger l'utilisateur connecté vers son dashboard
   useEffect(() => {
@@ -340,6 +347,9 @@ const AuthPage = () => {
                           className="border-gray-200 focus:border-violet focus:ring-violet"
                           required
                         />
+                        <p className="text-xs text-gray-500">
+                          Codes disponibles : ADMIN2024, ROBOKIDZ2024, EDUCATOR123
+                        </p>
                       </div>
                     )}
 
