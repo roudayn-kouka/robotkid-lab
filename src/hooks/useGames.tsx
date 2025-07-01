@@ -2,6 +2,9 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Game } from '@/types/game';
+import { Database } from '@/integrations/supabase/types';
+
+type CellType = Database['public']['Enums']['cell_type'];
 
 export const useGames = () => {
   const [games, setGames] = useState<Game[]>([]);
@@ -87,9 +90,9 @@ export const useGames = () => {
           game_id: newGame.id,
           row_index: cell.y,
           column_index: cell.x,
-          cell_type: getCellType(cell),
-          content: cell.content,
-          image_url: cell.imageUrl
+          cell_type: getCellType(cell) as CellType,
+          content: cell.content || null,
+          image_url: cell.imageUrl || null
         }));
 
         const { error: cellsError } = await supabase
@@ -151,7 +154,7 @@ function getCellColor(cellType: string): string {
   }
 }
 
-function getCellType(cell: any): string {
+function getCellType(cell: any): CellType {
   if (cell.isInformative) return 'informative';
   if (cell.isPath) return 'circuit';
   return 'obstacle';
