@@ -184,29 +184,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 px-4 bg-white/10 backdrop-blur-sm">
-        <div className="container mx-auto text-center">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Prêt à Commencer l'Aventure ?
-            </h2>
-            <p className="text-xl text-white/90 mb-8">
-              Rejoignez des milliers d'enseignants et de parents qui font confiance à RoboKidz 
-              pour l'éducation de leurs enfants.
-            </p>
-            <Button 
-              size="lg"
-              onClick={() => navigate('/auth')}
-              className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 text-white text-xl px-12 py-6 shadow-2xl hover:shadow-3xl transition-all duration-300"
-            >
-              Créer un Compte Gratuit
-              <ArrowRight className="ml-2 h-6 w-6" />
-            </Button>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12 px-4">
         <div className="container mx-auto">
