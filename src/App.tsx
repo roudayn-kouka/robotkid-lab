@@ -3,73 +3,76 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
-import Navigation from "./components/Navigation";
+import ProtectedRoute from "@/components/ProtectedRoute";
+
+// Pages
+import LandingPage from "./pages/LandingPage";
+import AuthPage from "./pages/AuthPage";
 import Index from "./pages/Index";
 import CreateGame from "./pages/CreateGame";
 import GameLibrary from "./pages/GameLibrary";
 import Analytics from "./pages/Analytics";
-import NotFound from "./pages/NotFound";
-import LandingPage from "./pages/LandingPage";
-import AuthPage from "./pages/AuthPage";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import ParentDashboard from "./pages/ParentDashboard";
-import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
+    <TooltipProvider>
+      <AuthProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <div className="min-h-screen bg-background">
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/auth" element={<AuthPage />} />
-              <Route path="/admin" element={
-                <ProtectedRoute requiredRole="admin">
-                  <Navigation />
-                  <Index />
-                </ProtectedRoute>
-              } />
-              <Route path="/teacher" element={
-                <ProtectedRoute requiredRole="teacher">
-                  <TeacherDashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="/parent" element={
-                <ProtectedRoute requiredRole="parent">
-                  <ParentDashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="/create-game" element={
-                <ProtectedRoute requiredRole="admin">
-                  <Navigation />
-                  <CreateGame />
-                </ProtectedRoute>
-              } />
-              <Route path="/games" element={
-                <ProtectedRoute requiredRole="admin">
-                  <Navigation />
-                  <GameLibrary />
-                </ProtectedRoute>
-              } />
-              <Route path="/analytics" element={
-                <ProtectedRoute requiredRole="admin">
-                  <Navigation />
-                  <Analytics />
-                </ProtectedRoute>
-              } />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </div>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/auth" element={<AuthPage />} />
+            
+            {/* Protected admin routes */}
+            <Route path="/admin" element={
+              <ProtectedRoute requiredRole="admin">
+                <Index />
+              </ProtectedRoute>
+            } />
+            <Route path="/create-game" element={
+              <ProtectedRoute requiredRole="admin">
+                <CreateGame />
+              </ProtectedRoute>
+            } />
+            <Route path="/games" element={
+              <ProtectedRoute requiredRole="admin">
+                <GameLibrary />
+              </ProtectedRoute>
+            } />
+            <Route path="/analytics" element={
+              <ProtectedRoute requiredRole="admin">
+                <Analytics />
+              </ProtectedRoute>
+            } />
+
+            {/* Protected teacher routes */}
+            <Route path="/teacher" element={
+              <ProtectedRoute requiredRole="teacher">
+                <TeacherDashboard />
+              </ProtectedRoute>
+            } />
+
+            {/* Protected parent routes */}
+            <Route path="/parent" element={
+              <ProtectedRoute requiredRole="parent">
+                <ParentDashboard />
+              </ProtectedRoute>
+            } />
+
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </TooltipProvider>
   </QueryClientProvider>
 );
 

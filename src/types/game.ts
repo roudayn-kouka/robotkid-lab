@@ -15,6 +15,7 @@ export interface InformativeCell {
   id: string;
   content: string;
   imageUrl: string;
+  audioUrl?: string;
 }
 
 export interface Game {

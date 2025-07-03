@@ -1,332 +1,229 @@
 
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import { Button } from '@/components/ui/button';
-import { User, Phone, MapPin, Instagram, LogOut, Menu, X } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
-import { useAuth } from '@/hooks/useAuth';
-import { useProfile } from '@/hooks/useProfile';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowRight, Play, Users, BarChart3, Gamepad2, Brain, Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const LandingPage = () => {
   const navigate = useNavigate();
-  const { signOut, user } = useAuth();
-  const { profile } = useProfile();
-  
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Rediriger l'utilisateur connecté vers son dashboard
-  useEffect(() => {
-    if (user && profile) {
-      switch (profile.role) {
-        case 'admin':
-          navigate('/admin');
-          break;
-        case 'teacher':
-          navigate('/teacher');
-          break;
-        case 'parent':
-          navigate('/parent');
-          break;
-      }
+  const features = [
+    {
+      icon: <Gamepad2 className="h-8 w-8 text-violet" />,
+      title: "Jeux Éducatifs",
+      description: "Créez et jouez à des jeux de circuit interactifs pour développer la logique et la résolution de problèmes."
+    },
+    {
+      icon: <Brain className="h-8 w-8 text-bleu" />,
+      title: "Apprentissage Adaptatif",
+      description: "Des contenus pédagogiques personnalisés qui s'adaptent au rythme de chaque enfant."
+    },
+    {
+      icon: <BarChart3 className="h-8 w-8 text-orange" />,
+      title: "Suivi des Progrès",
+      description: "Tableaux de bord détaillés pour suivre l'évolution et les performances des élèves."
+    },
+    {
+      icon: <Users className="h-8 w-8 text-violet" />,
+      title: "Gestion de Classes",
+      description: "Outils complets pour les enseignants et parents pour organiser et superviser l'apprentissage."
     }
-  }, [user, profile, navigate]);
+  ];
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
+  const testimonials = [
+    {
+      name: "Marie Dubois",
+      role: "Enseignante CE2",
+      content: "RoboKidz a transformé ma façon d'enseigner. Les enfants sont plus engagés et apprennent en s'amusant !",
+      rating: 5
+    },
+    {
+      name: "Pierre Martin",
+      role: "Parent",
+      content: "Mon fils adore les jeux de circuit. Je peux suivre ses progrès facilement depuis mon tableau de bord.",
+      rating: 5
+    },
+    {
+      name: "Sophie Laurent",
+      role: "Directrice d'école",
+      content: "Une plateforme complète qui répond à tous nos besoins pédagogiques. Excellent support technique !",
+      rating: 5
     }
-    setMobileMenuOpen(false);
-  };
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      toast({
-        title: "Déconnexion réussie",
-        description: "À bientôt !",
-      });
-    } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Erreur lors de la déconnexion",
-        variant: "destructive",
-      });
-    }
-  };
+  ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-br from-violet via-bleu to-orange">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm shadow-sm z-50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
+      <header className="bg-white/95 backdrop-blur-sm border-b border-white/20 sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <img src="/lovable-uploads/978af6a0-f975-4397-b2b1-1dffd0019eda.png" alt="RobotKid Lab" className="h-10 w-10" />
-              <span className="font-bold text-xl text-violet">RobotKid Lab</span>
+              <div className="w-8 h-8 bg-gradient-to-r from-violet to-bleu rounded-lg flex items-center justify-center">
+                <Gamepad2 className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-violet to-bleu bg-clip-text text-transparent">
+                RoboKidz
+              </span>
             </div>
             
-            {/* Desktop Menu */}
-            <div className="hidden md:flex items-center space-x-6">
-              <button onClick={() => scrollToSection('accueil')} className="text-gray-700 hover:text-violet transition-colors">
-                Accueil
-              </button>
-              <button onClick={() => scrollToSection('apropos')} className="text-gray-700 hover:text-violet transition-colors">
-                À propos
-              </button>
-              <button onClick={() => scrollToSection('connexion')} className="text-gray-700 hover:text-violet transition-colors">
-                Se connecter
-              </button>
-              <button onClick={() => scrollToSection('contact')} className="text-gray-700 hover:text-violet transition-colors">
-                Contact
-              </button>
-              {user && (
-                <Button onClick={handleSignOut} variant="outline" size="sm" className="flex items-center space-x-2">
-                  <LogOut className="h-4 w-4" />
-                  <span>Déconnexion</span>
-                </Button>
-              )}
-            </div>
-
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center space-x-2">
-              {user && (
-                <Button onClick={handleSignOut} variant="outline" size="sm">
-                  <LogOut className="h-4 w-4" />
-                </Button>
-              )}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-md text-gray-700 hover:text-violet"
-              >
-                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Menu */}
-          {mobileMenuOpen && (
-            <div className="md:hidden bg-white border-t">
-              <div className="px-2 pt-2 pb-3 space-y-1">
-                <button onClick={() => scrollToSection('accueil')} className="block px-3 py-2 text-gray-700 hover:text-violet w-full text-left">
-                  Accueil
-                </button>
-                <button onClick={() => scrollToSection('apropos')} className="block px-3 py-2 text-gray-700 hover:text-violet w-full text-left">
-                  À propos
-                </button>
-                <button onClick={() => scrollToSection('connexion')} className="block px-3 py-2 text-gray-700 hover:text-violet w-full text-left">
-                  Se connecter
-                </button>
-                <button onClick={() => scrollToSection('contact')} className="block px-3 py-2 text-gray-700 hover:text-violet w-full text-left">
-                  Contact
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </nav>
-
-      {/* Section Accueil */}
-      <section id="accueil" className="min-h-screen bg-gradient-to-br from-violet via-bleu to-orange flex items-center justify-center pt-16">
-        <div className="container mx-auto px-4 text-center text-white">
-          <div className="mb-8">
-            <img src="/lovable-uploads/978af6a0-f975-4397-b2b1-1dffd0019eda.png" alt="RobotKid Lab" className="h-24 w-24 mx-auto mb-6" />
-            <h1 className="text-5xl md:text-7xl font-bold mb-6">RobotKid Lab</h1>
-            <p className="text-xl md:text-2xl mb-8">Robot pédagogique pour les enfants dès 4 ans</p>
-            <p className="text-lg mb-8 max-w-2xl mx-auto">
-              Créez des jeux éducatifs avec des robots et découvrez l'apprentissage par le jeu
-            </p>
-            <Button
-              onClick={() => scrollToSection('connexion')}
-              className="bg-white text-violet hover:bg-gray-100 text-lg px-8 py-3"
+            <Button 
+              onClick={() => navigate('/auth')}
+              className="bg-gradient-to-r from-violet to-bleu hover:from-violet/90 hover:to-bleu/90"
             >
-              Commencer maintenant
+              Se Connecter
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="py-20 px-4">
+        <div className="container mx-auto text-center">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+              L'Apprentissage
+              <span className="block bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">
+                par le Jeu
+              </span>
+            </h1>
+            <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Découvrez RoboKidz, la plateforme éducative qui transforme l'apprentissage en aventure passionnante 
+              grâce aux jeux de circuit interactifs.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button 
+                size="lg"
+                onClick={() => navigate('/auth')}
+                className="bg-white text-bleu hover:bg-white/90 text-lg px-8 py-4"
+              >
+                <Play className="mr-2 h-5 w-5" />
+                Commencer Maintenant
+              </Button>
+              <Button 
+                size="lg"
+                variant="outline"
+                className="border-white text-white hover:bg-white hover:text-bleu text-lg px-8 py-4"
+              >
+                Découvrir les Fonctionnalités
+              </Button>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Section À propos */}
-      <section id="apropos" className="py-20 bg-white">
-        <div className="container mx-auto px-4">
+      {/* Features Section */}
+      <section className="py-20 px-4 bg-white/10 backdrop-blur-sm">
+        <div className="container mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-800 mb-6">À propos de RobotKid Lab</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              RobotKid Lab est une plateforme innovante qui permet aux enfants d'apprendre 
-              la programmation et la robotique de manière ludique et interactive.
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Pourquoi Choisir RoboKidz ?
+            </h2>
+            <p className="text-xl text-white/80 max-w-2xl mx-auto">
+              Une plateforme complète conçue pour révolutionner l'apprentissage des enfants
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <img 
-                src="/lovable-uploads/b9c7e286-56d6-44fe-8adc-98a77b98a2b9.png" 
-                alt="Présentation RobotKid Lab" 
-                className="rounded-lg shadow-lg w-full"
-              />
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">Notre Mission</h3>
-              <p className="text-gray-600 mb-6">
-                Nous croyons que l'apprentissage de la technologie doit être accessible, 
-                amusant et adapté à l'âge des enfants. Notre plateforme offre des outils 
-                intuitifs pour créer des expériences d'apprentissage engageantes.
-              </p>
-              <ul className="space-y-3 text-gray-600">
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-violet rounded-full mr-3"></div>
-                  Apprentissage par le jeu
-                </li>
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-bleu rounded-full mr-3"></div>
-                  Interface adaptée aux enfants
-                </li>
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-orange rounded-full mr-3"></div>
-                  Suivi des progrès
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-12 items-center mt-16">
-            <div className="order-2 md:order-1">
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">Innovation Pédagogique</h3>
-              <p className="text-gray-600 mb-6">
-                Nos méthodes d'enseignement sont basées sur les dernières recherches 
-                en pédagogie numérique et sont conçues pour stimuler la créativité 
-                et la pensée logique des enfants.
-              </p>
-            </div>
-            <div className="order-1 md:order-2">
-              <img 
-                src="/lovable-uploads/7a127ee6-c9ea-49c0-8ca3-1c5c25640131.png" 
-                alt="Innovation pédagogique" 
-                className="rounded-lg shadow-lg w-full"
-              />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
+              <Card key={index} className="bg-white/95 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                <CardHeader className="text-center pb-4">
+                  <div className="w-16 h-16 bg-gradient-to-r from-violet/10 to-bleu/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    {feature.icon}
+                  </div>
+                  <CardTitle className="text-xl font-bold text-gray-800">
+                    {feature.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-gray-600 text-center">
+                    {feature.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Section Se connecter */}
-      <section id="connexion" className="py-20 bg-gradient-to-br from-violet via-bleu to-orange">
-        <div className="container mx-auto px-4 text-center">
-          <div className="text-white mb-12">
-            <h2 className="text-4xl font-bold mb-6">Rejoignez RobotKid Lab</h2>
-            <p className="text-xl mb-8 max-w-2xl mx-auto">
-              Créez votre compte pour accéder à notre plateforme et commencer 
-              à créer des expériences d'apprentissage extraordinaires
-            </p>
-            <Button
-              onClick={() => navigate('/auth')}
-              className="bg-green-500 hover:bg-green-600 text-white text-lg px-8 py-4 rounded-lg font-semibold"
-            >
-              Se connecter / S'inscrire
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Section Contact */}
-      <section id="contact" className="py-20 bg-white">
-        <div className="container mx-auto px-4">
+      {/* Testimonials Section */}
+      <section className="py-20 px-4">
+        <div className="container mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-800 mb-6">Contactez-nous</h2>
-            <p className="text-xl text-gray-600">
-              Une question ? N'hésitez pas à nous contacter
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Ce que Disent nos Utilisateurs
+            </h2>
+            <p className="text-xl text-white/80 max-w-2xl mx-auto">
+              Découvrez les témoignages de nos enseignants, parents et élèves
             </p>
           </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <Card key={index} className="bg-white/95 backdrop-blur-sm border-0 shadow-xl">
+                <CardHeader>
+                  <div className="flex items-center space-x-1 mb-2">
+                    {Array.from({ length: testimonial.rating }).map((_, i) => (
+                      <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                  <CardDescription className="text-gray-700 text-lg italic">
+                    "{testimonial.content}"
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-sm">
+                    <p className="font-semibold text-gray-800">{testimonial.name}</p>
+                    <p className="text-gray-600">{testimonial.role}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
 
-          <div className="grid md:grid-cols-2 gap-12">
-            <div>
-              <img 
-                src="/lovable-uploads/2bb4c080-1581-4b0e-b63f-7f8417a46673.png" 
-                alt="Présentation RobotKid Lab" 
-                className="rounded-lg shadow-lg w-full mb-8"
-              />
-            </div>
-            
-            <div className="space-y-6">
-              <div className="bg-gradient-to-br from-violet/10 to-bleu/10 p-6 rounded-lg">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Informations</h3>
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="bg-violet/20 p-2 rounded-full">
-                      <User className="h-5 w-5 text-violet" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-800">Catégorie</p>
-                      <p className="text-gray-600">Enfants et éducation</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start space-x-3">
-                    <div className="bg-bleu/20 p-2 rounded-full">
-                      <MapPin className="h-5 w-5 text-bleu" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-800">Adresse</p>
-                      <p className="text-gray-600">Rue Ibn Khaldoun, Manouba, Tunisia, 2010</p>
-                      <p className="text-gray-600">Zone de service : Tunis, Tunisie</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start space-x-3">
-                    <div className="bg-orange/20 p-2 rounded-full">
-                      <Phone className="h-5 w-5 text-orange" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-800">Téléphone</p>
-                      <p className="text-gray-600">+216 22 987 454</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start space-x-3">
-                    <div className="bg-rouge/20 p-2 rounded-full">
-                      <Instagram className="h-5 w-5 text-rouge" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-800">Instagram</p>
-                      <a 
-                        href="https://www.instagram.com/sameh.zenned" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-violet hover:text-violet/80 underline"
-                      >
-                        @sameh.zenned
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-gradient-to-br from-orange/10 to-jaune/10 p-6 rounded-lg">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Notre Mission</h3>
-                <p className="text-gray-600">
-                  Robot pédagogique pour les enfants dès 4 ans. Nous rendons 
-                  l'apprentissage de la technologie accessible et amusant pour 
-                  tous les enfants.
-                </p>
-              </div>
-            </div>
+      {/* CTA Section */}
+      <section className="py-20 px-4 bg-white/10 backdrop-blur-sm">
+        <div className="container mx-auto text-center">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Prêt à Commencer l'Aventure ?
+            </h2>
+            <p className="text-xl text-white/90 mb-8">
+              Rejoignez des milliers d'enseignants et de parents qui font confiance à RoboKidz 
+              pour l'éducation de leurs enfants.
+            </p>
+            <Button 
+              size="lg"
+              onClick={() => navigate('/auth')}
+              className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 text-white text-xl px-12 py-6 shadow-2xl hover:shadow-3xl transition-all duration-300"
+            >
+              Créer un Compte Gratuit
+              <ArrowRight className="ml-2 h-6 w-6" />
+            </Button>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white py-8">
-        <div className="container mx-auto px-4 text-center">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <img src="/lovable-uploads/978af6a0-f975-4397-b2b1-1dffd0019eda.png" alt="RobotKid Lab" className="h-8 w-8" />
-            <span className="font-bold text-xl">RobotKid Lab</span>
+      <footer className="bg-gray-900 text-white py-12 px-4">
+        <div className="container mx-auto">
+          <div className="text-center">
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <div className="w-8 h-8 bg-gradient-to-r from-violet to-bleu rounded-lg flex items-center justify-center">
+                <Gamepad2 className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-2xl font-bold">RoboKidz</span>
+            </div>
+            <p className="text-gray-400 mb-4">
+              L'apprentissage par le jeu pour une éducation moderne et efficace
+            </p>
+            <p className="text-gray-500 text-sm">
+              © 2024 RoboKidz. Tous droits réservés.
+            </p>
           </div>
-          <p className="text-gray-400">
-            © 2024 RobotKid Lab. Tous droits réservés.
-          </p>
         </div>
       </footer>
     </div>

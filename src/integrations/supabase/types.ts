@@ -40,7 +40,7 @@ export type Database = {
           teacher_id: string | null
         }
         Insert: {
-          class_code: string
+          class_code?: string
           created_at?: string | null
           establishment_id?: string | null
           id?: string
@@ -79,6 +79,7 @@ export type Database = {
           id: string
           name: string
           region: string
+          user_count: number | null
         }
         Insert: {
           city: string
@@ -86,6 +87,7 @@ export type Database = {
           id?: string
           name: string
           region: string
+          user_count?: number | null
         }
         Update: {
           city?: string
@@ -93,6 +95,7 @@ export type Database = {
           id?: string
           name?: string
           region?: string
+          user_count?: number | null
         }
         Relationships: []
       }
@@ -304,6 +307,138 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_game_cells: {
+        Row: {
+          audio_url: string | null
+          cell_type: string
+          content: string | null
+          created_at: string | null
+          game_id: string | null
+          id: string
+          image_url: string | null
+          path_order: number | null
+          x: number
+          y: number
+        }
+        Insert: {
+          audio_url?: string | null
+          cell_type: string
+          content?: string | null
+          created_at?: string | null
+          game_id?: string | null
+          id?: string
+          image_url?: string | null
+          path_order?: number | null
+          x: number
+          y: number
+        }
+        Update: {
+          audio_url?: string | null
+          cell_type?: string
+          content?: string | null
+          created_at?: string | null
+          game_id?: string | null
+          id?: string
+          image_url?: string | null
+          path_order?: number | null
+          x?: number
+          y?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_game_cells_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "saved_games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_games: {
+        Row: {
+          created_at: string | null
+          creator_id: string | null
+          description: string | null
+          grid_columns: number
+          grid_rows: number
+          id: string
+          is_published: boolean | null
+          max_moves: number
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          creator_id?: string | null
+          description?: string | null
+          grid_columns?: number
+          grid_rows?: number
+          id?: string
+          is_published?: boolean | null
+          max_moves?: number
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          creator_id?: string | null
+          description?: string | null
+          grid_columns?: number
+          grid_rows?: number
+          id?: string
+          is_published?: boolean | null
+          max_moves?: number
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_games_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_informative_cells: {
+        Row: {
+          audio_url: string | null
+          cell_id: string
+          content: string | null
+          created_at: string | null
+          game_id: string | null
+          id: string
+          image_url: string | null
+        }
+        Insert: {
+          audio_url?: string | null
+          cell_id: string
+          content?: string | null
+          created_at?: string | null
+          game_id?: string | null
+          id?: string
+          image_url?: string | null
+        }
+        Update: {
+          audio_url?: string | null
+          cell_id?: string
+          content?: string | null
+          created_at?: string | null
+          game_id?: string | null
+          id?: string
+          image_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_informative_cells_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "saved_games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       student_performances: {
         Row: {
           average_completion_time: unknown | null
@@ -371,7 +506,7 @@ export type Database = {
           created_at?: string | null
           full_name: string
           id?: string
-          student_code: string
+          student_code?: string
         }
         Update: {
           class_id?: string | null
@@ -406,6 +541,18 @@ export type Database = {
         }
         Returns: string
       }
+      generate_class_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_student_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_unique_code: {
+        Args: { prefix: string; length?: number }
+        Returns: string
+      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["app_role"]
@@ -428,6 +575,18 @@ export type Database = {
           session_duration: unknown
         }
         Returns: undefined
+      }
+      save_complete_game: {
+        Args: {
+          game_name: string
+          game_description: string
+          max_moves_count: number
+          grid_rows: number
+          grid_cols: number
+          grid_cells: Json
+          info_cells: Json
+        }
+        Returns: string
       }
     }
     Enums: {
