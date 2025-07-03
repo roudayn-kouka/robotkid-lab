@@ -7,7 +7,6 @@ export const useAdminCodes = () => {
 
   const validateAdminCode = async (code: string) => {
     setLoading(true);
-    console.log('Validating admin code:', code);
     
     try {
       const { data, error } = await supabase
@@ -16,8 +15,6 @@ export const useAdminCodes = () => {
         .eq('code', code)
         .eq('is_active', true)
         .single();
-
-      console.log('Admin code validation result:', { data, error });
 
       if (error) {
         console.error('Error validating admin code:', error);
@@ -39,8 +36,12 @@ export const useAdminCodes = () => {
         .from('admin_codes')
         .select('*');
 
-      console.log('Available admin codes:', data);
-      return data;
+      if (error) {
+        console.error('Error listing admin codes:', error);
+        return [];
+      }
+
+      return data || [];
     } catch (error) {
       console.error('Error listing admin codes:', error);
       return [];
