@@ -1,73 +1,21 @@
-# Welcome to your Lovable project
+RobotKid Lab est un projet éducatif innovant destiné aux enfants à partir de 4 ans. Il combine technologie, pédagogie et ludification pour initier les plus jeunes à la robotique, à la logique, et à la résolution de problèmes de manière interactive et amusante.
 
-## Project info
+🎯 Objectif
+Permettre aux enfants de développer des compétences cognitives et logiques à travers l'utilisation d'un robot éducatif. Le projet vise à :
 
-**URL**: https://lovable.dev/projects/64a75828-6ca4-4a03-8429-337c6308e98c
+Stimuler la curiosité scientifique dès le plus jeune âge.
 
-## How can I edit this code?
+Initier les enfants à la programmation par le jeu.
 
-There are several ways of editing your application.
+Offrir aux éducateurs un outil facile à utiliser pour animer des ateliers.
 
-**Use Lovable**
+🚀 Fonctionnalités principales
+Contrôle du robot via une interface simple.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/64a75828-6ca4-4a03-8429-337c6308e98c) and start prompting.
+Modules de jeux éducatifs intégrés.
 
-Changes made via Lovable will be committed automatically to this repo.
+Activités personnalisées en fonction de l’âge.
 
-**Use your preferred IDE**
+Détection d'obstacles et navigation automatique.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/64a75828-6ca4-4a03-8429-337c6308e98c) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Interaction vocale ou sonore (selon modèle).
