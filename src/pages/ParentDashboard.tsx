@@ -1,103 +1,252 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LogOut, Heart, BookOpen, BarChart3 } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import { toast } from '@/hooks/use-toast';
+import { Progress } from '@/components/ui/progress';
+import { Heart, BookOpen, BarChart3, Trophy, Clock, Target, TrendingUp, Star } from 'lucide-react';
+import DashboardHeader from '@/components/shared/DashboardHeader';
 
 const ParentDashboard = () => {
-  const { signOut } = useAuth();
+  const [selectedChild, setSelectedChild] = useState('emma');
 
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      toast({
-        title: "Déconnexion réussie",
-        description: "À bientôt !",
-      });
-    } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Erreur lors de la déconnexion",
-        variant: "destructive",
-      });
+  // Mock data - à remplacer par de vraies données
+  const children = [
+    { 
+      id: 'emma', 
+      name: 'Emma', 
+      age: 7, 
+      level: 'CE1',
+      progress: 78,
+      totalGames: 12,
+      completedGames: 9,
+      averageScore: 85
+    },
+    { 
+      id: 'lucas', 
+      name: 'Lucas', 
+      age: 5, 
+      level: 'GS',
+      progress: 45,
+      totalGames: 8,
+      completedGames: 4,
+      averageScore: 72
     }
-  };
+  ];
+
+  const currentChild = children.find(child => child.id === selectedChild) || children[0];
+
+  const recentActivities = [
+    { game: 'Circuit Logique 1', score: 92, date: '2024-01-15', duration: '12 min' },
+    { game: 'Parcours Robot', score: 78, date: '2024-01-14', duration: '8 min' },
+    { game: 'Défi Créatif', score: 85, date: '2024-01-13', duration: '15 min' },
+  ];
+
+  const achievements = [
+    { title: 'Premier Circuit', description: 'Terminé son premier circuit', icon: Target, earned: true },
+    { title: 'Série de 5', description: '5 jeux réussis consécutivement', icon: Star, earned: true },
+    { title: 'Expert Logique', description: 'Score parfait en logique', icon: Trophy, earned: false },
+  ];
+
+  const recommendations = [
+    {
+      title: 'Circuit Avancé 1',
+      description: 'Prêt pour le niveau suivant en logique',
+      difficulty: 'Moyen',
+      estimatedTime: '10-15 min'
+    },
+    {
+      title: 'Jeu Collaboratif',
+      description: 'Parfait pour jouer en famille',
+      difficulty: 'Facile',
+      estimatedTime: '5-10 min'
+    }
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet via-bleu to-orange">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-2">
-              <img src="/lovable-uploads/978af6a0-f975-4397-b2b1-1dffd0019eda.png" alt="RobotKid Lab" className="h-8 w-8" />
-              <span className="font-bold text-xl text-violet">RobotKid Lab - Parent</span>
-            </div>
-            <Button
-              onClick={handleSignOut}
-              variant="outline"
-              size="sm"
-              className="flex items-center space-x-2 bg-red-50 hover:bg-red-100 border-red-200 text-red-700"
-            >
-              <LogOut className="h-4 w-4" />
-              <span>Déconnexion</span>
-            </Button>
+    <div className="min-h-screen bg-gradient-to-br from-violet/5 via-bleu/5 to-orange/5">
+      <DashboardHeader 
+        title="Tableau de bord Parent" 
+        subtitle="Suivez les progrès de vos enfants avec RobotKid Lab"
+        userType="parent" 
+      />
+
+      <main className="container mx-auto px-4 py-8">
+        {/* Child Selection */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            Tableau de bord Famille
+          </h1>
+          <div className="flex space-x-4">
+            {children.map((child) => (
+              <Button
+                key={child.id}
+                onClick={() => setSelectedChild(child.id)}
+                variant={selectedChild === child.id ? "default" : "outline"}
+                className={selectedChild === child.id ? "bg-violet hover:bg-violet/90" : ""}
+              >
+                {child.name} ({child.age} ans)
+              </Button>
+            ))}
           </div>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="text-center text-white mb-12">
-          <h1 className="text-4xl font-bold mb-4">Tableau de bord Parent</h1>
-          <p className="text-xl">Suivez les progrès de vos enfants avec RobotKid Lab</p>
+        {/* Child Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-white shadow-sm border-l-4 border-l-violet">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Progrès Global</p>
+                  <p className="text-3xl font-bold text-violet">{currentChild.progress}%</p>
+                </div>
+                <TrendingUp className="h-8 w-8 text-violet" />
+              </div>
+              <Progress value={currentChild.progress} className="mt-3" />
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white shadow-sm border-l-4 border-l-bleu">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Jeux Terminés</p>
+                  <p className="text-3xl font-bold text-bleu">
+                    {currentChild.completedGames}/{currentChild.totalGames}
+                  </p>
+                </div>
+                <BookOpen className="h-8 w-8 text-bleu" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white shadow-sm border-l-4 border-l-orange">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Score Moyen</p>
+                  <p className="text-3xl font-bold text-orange">{currentChild.averageScore}%</p>
+                </div>
+                <BarChart3 className="h-8 w-8 text-orange" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white shadow-sm border-l-4 border-l-rouge">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Niveau</p>
+                  <p className="text-3xl font-bold text-rouge">{currentChild.level}</p>
+                </div>
+                <Heart className="h-8 w-8 text-rouge" />
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="bg-white/95 backdrop-blur-sm">
+        <div className="grid lg:grid-cols-2 gap-8">
+          {/* Recent Activities */}
+          <Card className="bg-white shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Heart className="h-5 w-5 text-rouge" />
-                <span>Mes Enfants</span>
+                <Clock className="h-5 w-5 text-bleu" />
+                <span>Activités Récentes</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600">Gérez les profils de vos enfants</p>
-              <Button className="mt-4 bg-rouge hover:bg-rouge/90">
-                Voir les profils
-              </Button>
+              <div className="space-y-4">
+                {recentActivities.map((activity, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">{activity.game}</p>
+                      <div className="flex items-center space-x-4 text-sm text-gray-600">
+                        <span>{activity.date}</span>
+                        <span>{activity.duration}</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        activity.score >= 80 
+                          ? 'bg-green-100 text-green-800' 
+                          : activity.score >= 60 
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {activity.score}%
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/95 backdrop-blur-sm">
+          {/* Achievements */}
+          <Card className="bg-white shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <BookOpen className="h-5 w-5 text-violet" />
-                <span>Activités</span>
+                <Trophy className="h-5 w-5 text-orange" />
+                <span>Réalisations</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600">Découvrez les activités réalisées</p>
-              <Button className="mt-4 bg-violet hover:bg-violet/90">
-                Voir les activités
-              </Button>
+              <div className="space-y-4">
+                {achievements.map((achievement, index) => (
+                  <div key={index} className={`flex items-center space-x-3 p-3 rounded-lg ${
+                    achievement.earned ? 'bg-green-50' : 'bg-gray-50'
+                  }`}>
+                    <div className={`p-2 rounded-full ${
+                      achievement.earned ? 'bg-green-100' : 'bg-gray-200'
+                    }`}>
+                      <achievement.icon className={`h-5 w-5 ${
+                        achievement.earned ? 'text-green-600' : 'text-gray-400'
+                      }`} />
+                    </div>
+                    <div className="flex-1">
+                      <p className={`font-medium ${
+                        achievement.earned ? 'text-green-900' : 'text-gray-600'
+                      }`}>
+                        {achievement.title}
+                      </p>
+                      <p className="text-sm text-gray-600">{achievement.description}</p>
+                    </div>
+                    {achievement.earned && (
+                      <Star className="h-5 w-5 text-yellow-500 fill-current" />
+                    )}
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
+        </div>
 
-          <Card className="bg-white/95 backdrop-blur-sm">
+        {/* Recommendations */}
+        <div className="mt-8">
+          <Card className="bg-white shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <BarChart3 className="h-5 w-5 text-bleu" />
-                <span>Progrès</span>
+                <Target className="h-5 w-5 text-violet" />
+                <span>Recommandations pour {currentChild.name}</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600">Suivez les progrès de vos enfants</p>
-              <Button className="mt-4 bg-bleu hover:bg-bleu/90">
-                Voir les progrès
-              </Button>
+              <div className="grid md:grid-cols-2 gap-4">
+                {recommendations.map((rec, index) => (
+                  <div key={index} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                    <h4 className="font-semibold text-gray-900 mb-2">{rec.title}</h4>
+                    <p className="text-sm text-gray-600 mb-3">{rec.description}</p>
+                    <div className="flex justify-between items-center">
+                      <div className="flex space-x-4 text-xs text-gray-500">
+                        <span>Difficulté: {rec.difficulty}</span>
+                        <span>Durée: {rec.estimatedTime}</span>
+                      </div>
+                      <Button size="sm" variant="outline">
+                        Jouer
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </div>
