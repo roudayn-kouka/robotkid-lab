@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -5,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Eye, EyeOff, Mail, Lock, User, Plus, Trash2 } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Plus, Trash2, Phone } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
@@ -18,6 +19,7 @@ const AuthPage = () => {
   const { validateAdminCode } = useAdminCodes();
   
   const [isLogin, setIsLogin] = useState(true);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState<'admin' | 'teacher' | 'parent'>('admin');
@@ -26,6 +28,7 @@ const AuthPage = () => {
     password: '',
     confirmPassword: '',
     name: '',
+    phone: '',
     adminCode: '',
     establishment: '',
     region: '',
@@ -91,6 +94,37 @@ const AuthPage = () => {
       ...formData,
       childrenCodes: newCodes
     });
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.email) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez entrer votre adresse email",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Simulate forgot password API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast({
+        title: "Email envoyé",
+        description: "Un lien de réinitialisation a été envoyé à votre adresse email",
+      });
+      setIsForgotPassword(false);
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de l'envoi de l'email de réinitialisation",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const validateForm = async () => {
@@ -178,6 +212,7 @@ const AuthPage = () => {
       } else {
         const { error } = await signUp(formData.email, formData.password, {
           name: formData.name,
+          phone: formData.phone,
           selectedRole,
           establishment: formData.establishment,
           region: formData.region,
@@ -209,6 +244,67 @@ const AuthPage = () => {
       setLoading(false);
     }
   };
+
+  if (isForgotPassword) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-violet via-bleu to-orange flex items-center justify-center">
+        <div className="container mx-auto px-4">
+          <div className="max-w-md mx-auto">
+            <Card className="backdrop-blur-sm bg-white/95 shadow-2xl border-0">
+              <CardHeader className="space-y-1 pb-6">
+                <div className="flex items-center justify-center mb-4">
+                  <img src="/lovable-uploads/978af6a0-f975-4397-b2b1-1dffd0019eda.png" alt="RobotKid Lab" className="h-12 w-12" />
+                </div>
+                <CardTitle className="text-2xl text-center text-gray-800">
+                  Mot de passe oublié
+                </CardTitle>
+                <p className="text-center text-gray-600">
+                  Entrez votre adresse email pour recevoir un lien de réinitialisation
+                </p>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleForgotPassword} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="Entrez votre email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className="pl-10 border-gray-200 focus:border-violet focus:ring-violet"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-violet hover:bg-violet/90 text-white font-medium py-2.5"
+                  >
+                    {loading ? 'Envoi...' : 'Envoyer le lien'}
+                  </Button>
+                </form>
+
+                <div className="mt-6 text-center">
+                  <button
+                    onClick={() => setIsForgotPassword(false)}
+                    className="text-violet hover:text-violet/80 font-medium underline"
+                  >
+                    Retour à la connexion
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet via-bleu to-orange flex items-center justify-center">
@@ -256,6 +352,24 @@ const AuthPage = () => {
                           type="text"
                           placeholder="Entrez votre nom complet"
                           value={formData.name}
+                          onChange={handleInputChange}
+                          className="pl-10 border-gray-200 focus:border-violet focus:ring-violet"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* Phone Field */}
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Numéro de téléphone</Label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <Input
+                          id="phone"
+                          name="phone"
+                          type="tel"
+                          placeholder="Entrez votre numéro de téléphone"
+                          value={formData.phone}
                           onChange={handleInputChange}
                           className="pl-10 border-gray-200 focus:border-violet focus:ring-violet"
                           required
@@ -438,6 +552,17 @@ const AuthPage = () => {
                   {loading ? 'Chargement...' : (isLogin ? 'Se connecter' : 'Créer un compte')}
                 </Button>
               </form>
+
+              {isLogin && (
+                <div className="mt-4 text-center">
+                  <button
+                    onClick={() => setIsForgotPassword(true)}
+                    className="text-violet hover:text-violet/80 font-medium underline text-sm"
+                  >
+                    Mot de passe oublié ?
+                  </button>
+                </div>
+              )}
 
               <div className="mt-6 text-center">
                 <p className="text-gray-600">

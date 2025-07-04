@@ -1,19 +1,30 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { BookOpen, Users, BarChart3, Plus, Search, GraduationCap, Trophy } from 'lucide-react';
+import { BookOpen, Users, BarChart3, Search, GraduationCap, Trophy } from 'lucide-react';
 import DashboardHeader from '@/components/shared/DashboardHeader';
+import CreateClassModal from '@/components/modals/CreateClassModal';
+import StudentListModal from '@/components/modals/StudentListModal';
+import AssignGameModal from '@/components/modals/AssignGameModal';
+import DetailedReportModal from '@/components/modals/DetailedReportModal';
 
 const TeacherDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
-
-  // Mock data - à remplacer par de vraies données
-  const classes = [
+  const [classes, setClasses] = useState([
     { id: '1', name: 'CE1 A', students: 24, code: 'CLS-ABC123' },
     { id: '2', name: 'CE2 B', students: 22, code: 'CLS-DEF456' },
-  ];
+  ]);
+
+  const handleClassCreated = (className: string) => {
+    const newClass = {
+      id: Date.now().toString(),
+      name: className,
+      students: 0,
+      code: `CLS-${Math.random().toString(36).substr(2, 6).toUpperCase()}`
+    };
+    setClasses([...classes, newClass]);
+  };
 
   const recentActivities = [
     { student: 'Emma Martin', game: 'Circuit Logique 1', score: 85, date: '2024-01-15' },
@@ -106,10 +117,7 @@ const TeacherDashboard = () => {
                 <GraduationCap className="h-5 w-5 text-violet" />
                 <span>Mes Classes</span>
               </CardTitle>
-              <Button size="sm" className="bg-violet hover:bg-violet/90">
-                <Plus className="h-4 w-4 mr-2" />
-                Nouvelle Classe
-              </Button>
+              <CreateClassModal onClassCreated={handleClassCreated} />
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -132,9 +140,7 @@ const TeacherDashboard = () => {
                           <p className="text-xs text-gray-500">Code: {classe.code}</p>
                         </div>
                         <div className="flex space-x-2">
-                          <Button variant="outline" size="sm">
-                            Voir Élèves
-                          </Button>
+                          <StudentListModal className={classe.name} />
                           <Button variant="outline" size="sm">
                             Stats
                           </Button>
@@ -190,18 +196,12 @@ const TeacherDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Button className="bg-violet hover:bg-violet/90 h-12">
-                  <BookOpen className="h-4 w-4 mr-2" />
-                  Assigner un Jeu
-                </Button>
+                <AssignGameModal />
                 <Button variant="outline" className="h-12">
                   <Users className="h-4 w-4 mr-2" />
                   Ajouter des Élèves
                 </Button>
-                <Button variant="outline" className="h-12">
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  Rapport Détaillé
-                </Button>
+                <DetailedReportModal />
               </div>
             </CardContent>
           </Card>

@@ -2,6 +2,7 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import EmailConfirmationPopup from '@/components/EmailConfirmationPopup';
 
 interface AuthContextType {
   user: User | null;
@@ -18,6 +19,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
+  const [confirmationEmail, setConfirmationEmail] = useState('');
 
   useEffect(() => {
     // Écouter les changements d'état d'authentification
@@ -49,6 +52,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           emailRedirectTo: `${window.location.origin}/`,
           data: {
             full_name: userData.name,
+            phone: userData.phone,
             role: userData.selectedRole,
             establishment: userData.establishment,
             region: userData.region,
@@ -58,6 +62,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           }
         }
       });
+
+      if (!error) {
+        setConfirmationEmail(email);
+        setShowEmailConfirmation(true);
+      }
 
       return { error };
     } catch (error) {
@@ -92,6 +101,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       signOut
     }}>
       {children}
+      <EmailConfirmationPopup
+        isOpen={showEmailConfirmation}
+        onClose={() => setShowEmailConfirmation(false)}
+        email={confirmationEmail}
+      />
     </AuthContext.Provider>
   );
 };

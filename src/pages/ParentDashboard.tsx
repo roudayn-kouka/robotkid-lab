@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Heart, BookOpen, BarChart3, Trophy, Clock, Target, TrendingUp, Star } from 'lucide-react';
+import { Heart, BookOpen, BarChart3, Trophy, Clock, Target, TrendingUp, Star, AlertTriangle, CheckCircle, Lightbulb } from 'lucide-react';
 import DashboardHeader from '@/components/shared/DashboardHeader';
+import { Badge } from '@/components/ui/badge';
 
 const ParentDashboard = () => {
   const [selectedChild, setSelectedChild] = useState('emma');
@@ -19,7 +19,14 @@ const ParentDashboard = () => {
       progress: 78,
       totalGames: 12,
       completedGames: 9,
-      averageScore: 85
+      averageScore: 85,
+      strengths: ['Logique', 'Créativité', 'Persévérance'],
+      weaknesses: ['Vitesse d\'exécution', 'Attention aux détails'],
+      advice: [
+        'Encouragez Emma à prendre son temps pour vérifier ses réponses',
+        'Proposez des jeux de logique supplémentaires pour renforcer ses points forts',
+        'Travaillez sur des exercices de concentration courte mais régulière'
+      ]
     },
     { 
       id: 'lucas', 
@@ -29,7 +36,14 @@ const ParentDashboard = () => {
       progress: 45,
       totalGames: 8,
       completedGames: 4,
-      averageScore: 72
+      averageScore: 72,
+      strengths: ['Motivation', 'Curiosité'],
+      weaknesses: ['Compréhension des consignes', 'Patience'],
+      advice: [
+        'Lisez les consignes ensemble avant de commencer',
+        'Faites des pauses régulières pour maintenir sa concentration',
+        'Célébrez chaque petit progrès pour maintenir sa motivation'
+      ]
     }
   ];
 
@@ -145,6 +159,70 @@ const ParentDashboard = () => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
+          {/* Strengths and Weaknesses */}
+          <Card className="bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Target className="h-5 w-5 text-green-600" />
+                <span>Points Forts et Axes d'Amélioration</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {/* Strengths */}
+                <div>
+                  <h4 className="font-semibold text-green-700 mb-3 flex items-center">
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Points Forts
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {currentChild.strengths.map((strength, index) => (
+                      <Badge key={index} variant="secondary" className="bg-green-100 text-green-800">
+                        {strength}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Weaknesses */}
+                <div>
+                  <h4 className="font-semibold text-orange-700 mb-3 flex items-center">
+                    <AlertTriangle className="h-4 w-4 mr-2" />
+                    Axes d'Amélioration
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {currentChild.weaknesses.map((weakness, index) => (
+                      <Badge key={index} variant="secondary" className="bg-orange-100 text-orange-800">
+                        {weakness}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Personalized Advice */}
+          <Card className="bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Lightbulb className="h-5 w-5 text-yellow-600" />
+                <span>Conseils Personnalisés</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {currentChild.advice.map((tip, index) => (
+                  <div key={index} className="p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
+                    <p className="text-sm text-gray-700">{tip}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-8 mt-8">
           {/* Recent Activities */}
           <Card className="bg-white shadow-sm">
             <CardHeader>
