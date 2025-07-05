@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
@@ -10,17 +10,29 @@ import {
   Plus,
   Library,
   TrendingUp,
-  Shield
+  Shield,
+  Edit,
+  Trash2,
+  Eye
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import DashboardHeader from '@/components/shared/DashboardHeader';
+import EstablishmentManagementModal from '@/components/modals/EstablishmentManagementModal';
+import GameManagementModal from '@/components/modals/GameManagementModal';
+import { useSavedGames } from '@/hooks/useSavedGames';
 
 const Index = () => {
   const navigate = useNavigate();
+  const { savedGames, loading: gamesLoading } = useSavedGames();
+
+  // Game management modal state
+  const [gameModalOpen, setGameModalOpen] = useState(false);
+  const [selectedGameId, setSelectedGameId] = useState<string>('');
+  const [gameModalMode, setGameModalMode] = useState<'edit' | 'delete' | 'view'>('view');
 
   // Mock data - à remplacer par de vraies données
   const stats = {
-    totalGames: 24,
+    totalGames: savedGames?.length || 24,
     totalUsers: 1247,
     activeToday: 89,
     completionRate: 94
@@ -53,15 +65,14 @@ const Index = () => {
       icon: BarChart3,
       color: 'orange',
       onClick: () => navigate('/analytics')
-    },
-    {
-      title: 'Gestion',
-      description: 'Administrez les utilisateurs et contenus',
-      icon: Settings,
-      color: 'rouge',
-      onClick: () => {}
     }
   ];
+
+  const handleGameAction = (gameId: string, mode: 'edit' | 'delete' | 'view') => {
+    setSelectedGameId(gameId);
+    setGameModalMode(mode);
+    setGameModalOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet/5 via-bleu/5 to-orange/5">
@@ -135,8 +146,11 @@ const Index = () => {
 
         {/* Quick Actions */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Actions Rapides</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Actions Rapides</h2>
+            <EstablishmentManagementModal />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {quickActions.map((action, index) => (
               <Card 
                 key={index} 
@@ -161,7 +175,78 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Recent Activity */}
+        {/* Games Management */}
+        <div className="mb-8">
+          <Card className="bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <GamepadIcon className="h-5 w-5 text-violet" />
+                <span>Gestion des Jeux</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {gamesLoading ? (
+                <div className="text-center py-8">
+                  <div className="text-lg">Chargement des jeux...</div>
+                </div>
+              ) : (
+                <div className="space-y-4 max-h-96 overflow-y-auto">
+                  {savedGames?.map((game) => (
+                    <div key={game.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900">{game.name}</h4>
+                        <p className="text-sm text-gray-600">{game.description || 'Pas de description'}</p>
+                        <div className="flex space-x-2 mt-2">
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                            game.is_published 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {game.is_published ? 'Publié' : 'Brouillon'}
+                          </span>
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {game.max_moves} mouvements max
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleGameAction(game.id, 'view')}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleGameAction(game.id, 'edit')}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleGameAction(game.id, 'delete')}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  {(!savedGames || savedGames.length === 0) && (
+                    <div className="text-center py-8 text-gray-500">
+                      Aucun jeu créé pour le moment
+                    </div>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Activity and System Status */}
         <div className="grid lg:grid-cols-2 gap-8">
           <Card className="bg-white shadow-sm">
             <CardHeader>
@@ -186,7 +271,6 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          {/* System Status */}
           <Card className="bg-white shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -217,6 +301,14 @@ const Index = () => {
           </Card>
         </div>
       </main>
+
+      {/* Game Management Modal */}
+      <GameManagementModal
+        isOpen={gameModalOpen}
+        onClose={() => setGameModalOpen(false)}
+        gameId={selectedGameId}
+        mode={gameModalMode}
+      />
     </div>
   );
 };

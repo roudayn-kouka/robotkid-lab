@@ -1,20 +1,58 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 interface CreateClassModalProps {
-  onClassCreated: (className: string) => void;
+  onClassCreated?: (className: string) => void;
+}
+
+interface Establishment {
+  id: string;
+  name: string;
+  city: string;
+  region: string;
 }
 
 const CreateClassModal: React.FC<CreateClassModalProps> = ({ onClassCreated }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [className, setClassName] = useState('');
+  const [establishmentId, setEstablishmentId] = useState('');
+  const [establishments, setEstablishments] = useState<Establishment[]>([]);
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchEstablishments();
+    }
+  }, [isOpen]);
+
+  const fetchEstablishments = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('establishments')
+        .select('*')
+        .order('name');
+
+      if (error) throw error;
+      setEstablishments(data || []);
+    } catch (error) {
+      console.error('Error fetching establishments:', error);
+      toast({
+        title: "Erreur",
+        description: "Erreur lors du chargement des établissements",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,18 +65,40 @@ const CreateClassModal: React.FC<CreateClassModalProps> = ({ onClassCreated }) =
       return;
     }
 
+    if (!establishmentId) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez sélectionner un établissement",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      onClassCreated(className);
+      const { data, error } = await supabase
+        .from('classes')
+        .insert([{
+          name: className,
+          establishment_id: establishmentId,
+          teacher_id: user?.id
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
       toast({
         title: "Succès",
         description: "Classe créée avec succès",
       });
+      
+      onClassCreated?.(className);
       setClassName('');
+      setEstablishmentId('');
       setIsOpen(false);
     } catch (error) {
+      console.error('Error creating class:', error);
       toast({
         title: "Erreur",
         description: "Erreur lors de la création de la classe",
@@ -62,6 +122,21 @@ const CreateClassModal: React.FC<CreateClassModalProps> = ({ onClassCreated }) =
           <DialogTitle>Créer une nouvelle classe</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="establishment">Établissement</Label>
+            <Select value={establishmentId} onValueChange={setEstablishmentId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Sélectionnez un établissement" />
+              </SelectTrigger>
+              <SelectContent>
+                {establishments.map((establishment) => (
+                  <SelectItem key={establishment.id} value={establishment.id}>
+                    {establishment.name} - {establishment.city}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="space-y-2">
             <Label htmlFor="className">Nom de la classe</Label>
             <Input
