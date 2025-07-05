@@ -16,8 +16,8 @@ interface Game {
   name: string;
   description: string | null;
   max_moves: number;
-  rows: number;
-  columns: number;
+  grid_rows: number;
+  grid_columns: number;
   is_published: boolean;
   created_at: string;
 }
@@ -213,7 +213,7 @@ const GameManagementModal: React.FC<GameManagementModalProps> = ({
                         {game.max_moves} mouvements max
                       </Badge>
                       <Badge variant="outline">
-                        Grille {game.rows}x{game.columns}
+                        Grille {game.grid_rows}x{game.grid_columns}
                       </Badge>
                     </div>
                   </CardContent>
@@ -287,11 +287,11 @@ const GameManagementModal: React.FC<GameManagementModalProps> = ({
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <Label>Lignes</Label>
-                        <div className="font-semibold">{game.rows}</div>
+                        <div className="font-semibold">{game.grid_rows}</div>
                       </div>
                       <div>
                         <Label>Colonnes</Label>
-                        <div className="font-semibold">{game.columns}</div>
+                        <div className="font-semibold">{game.grid_columns}</div>
                       </div>
                     </div>
                   </CardContent>

@@ -23,7 +23,7 @@ import { useSavedGames } from '@/hooks/useSavedGames';
 
 const Index = () => {
   const navigate = useNavigate();
-  const { savedGames, loading: gamesLoading } = useSavedGames();
+  const { games, loading: gamesLoading } = useSavedGames();
 
   // Game management modal state
   const [gameModalOpen, setGameModalOpen] = useState(false);
@@ -32,7 +32,7 @@ const Index = () => {
 
   // Mock data - à remplacer par de vraies données
   const stats = {
-    totalGames: savedGames?.length || 24,
+    totalGames: games?.length || 24,
     totalUsers: 1247,
     activeToday: 89,
     completionRate: 94
@@ -191,7 +191,7 @@ const Index = () => {
                 </div>
               ) : (
                 <div className="space-y-4 max-h-96 overflow-y-auto">
-                  {savedGames?.map((game) => (
+                  {games?.map((game) => (
                     <div key={game.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
                       <div className="flex-1">
                         <h4 className="font-semibold text-gray-900">{game.name}</h4>
@@ -235,7 +235,7 @@ const Index = () => {
                       </div>
                     </div>
                   ))}
-                  {(!savedGames || savedGames.length === 0) && (
+                  {(!games || games.length === 0) && (
                     <div className="text-center py-8 text-gray-500">
                       Aucun jeu créé pour le moment
                     </div>
