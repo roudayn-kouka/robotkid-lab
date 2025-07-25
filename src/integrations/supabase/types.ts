@@ -104,6 +104,48 @@ export type Database = {
         }
         Relationships: []
       }
+      game_attempts: {
+        Row: {
+          attempts_remaining: number
+          created_at: string | null
+          game_id: string | null
+          id: string
+          last_attempt_at: string | null
+          student_id: string | null
+        }
+        Insert: {
+          attempts_remaining: number
+          created_at?: string | null
+          game_id?: string | null
+          id?: string
+          last_attempt_at?: string | null
+          student_id?: string | null
+        }
+        Update: {
+          attempts_remaining?: number
+          created_at?: string | null
+          game_id?: string | null
+          id?: string
+          last_attempt_at?: string | null
+          student_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_attempts_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_attempts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       game_cells: {
         Row: {
           audio_url: string | null
@@ -119,7 +161,7 @@ export type Database = {
         }
         Insert: {
           audio_url?: string | null
-          cell_type: Database["public"]["Enums"]["cell_type"]
+          cell_type?: Database["public"]["Enums"]["cell_type"]
           column_index: number
           content?: string | null
           created_at?: string | null
@@ -208,6 +250,7 @@ export type Database = {
           created_at: string | null
           creator_id: string | null
           description: string | null
+          health: number
           id: string
           is_published: boolean | null
           max_moves: number
@@ -220,6 +263,7 @@ export type Database = {
           created_at?: string | null
           creator_id?: string | null
           description?: string | null
+          health?: number
           id?: string
           is_published?: boolean | null
           max_moves?: number
@@ -232,6 +276,7 @@ export type Database = {
           created_at?: string | null
           creator_id?: string | null
           description?: string | null
+          health?: number
           id?: string
           is_published?: boolean | null
           max_moves?: number
@@ -366,6 +411,7 @@ export type Database = {
           description: string | null
           grid_columns: number
           grid_rows: number
+          health: number
           id: string
           is_published: boolean | null
           max_moves: number
@@ -378,6 +424,7 @@ export type Database = {
           description?: string | null
           grid_columns?: number
           grid_rows?: number
+          health?: number
           id?: string
           is_published?: boolean | null
           max_moves?: number
@@ -390,6 +437,7 @@ export type Database = {
           description?: string | null
           grid_columns?: number
           grid_rows?: number
+          health?: number
           id?: string
           is_published?: boolean | null
           max_moves?: number
@@ -565,6 +613,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      authenticate_student: {
+        Args: { student_code: string }
+        Returns: {
+          student_id: string
+          class_id: string
+          student_name: string
+          class_name: string
+        }[]
+      }
       create_new_game: {
         Args: {
           game_name: string
@@ -626,7 +683,12 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "teacher" | "parent"
-      cell_type: "start" | "end" | "obstacle" | "circuit" | "informative"
+      cell_type:
+        | "start"
+        | "end"
+        | "audio_interaction"
+        | "interaction"
+        | "obstacle"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -755,7 +817,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "teacher", "parent"],
-      cell_type: ["start", "end", "obstacle", "circuit", "informative"],
+      cell_type: [
+        "start",
+        "end",
+        "audio_interaction",
+        "interaction",
+        "obstacle",
+      ],
     },
   },
 } as const
