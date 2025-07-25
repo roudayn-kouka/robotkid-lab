@@ -8,6 +8,7 @@ export interface SavedGame {
   name: string;
   description: string;
   max_moves: number;
+  health: number;
   grid_rows: number;
   grid_columns: number;
   creator_id: string;

@@ -32,25 +32,27 @@ export const useGames = () => {
           id: gameData.id,
           name: gameData.name,
           maxMoves: gameData.max_moves,
-          totalCircuitCells: gameData.game_cells?.filter((cell: any) => cell.cell_type === 'circuit').length || 0,
-          totalInfoCells: gameData.game_cells?.filter((cell: any) => cell.cell_type === 'informative').length || 0,
+          health: gameData.health || 3,
+          totalCircuitCells: gameData.game_cells?.filter((cell: any) => ['start', 'end', 'interaction'].includes(cell.cell_type)).length || 0,
+          totalInfoCells: gameData.game_cells?.filter((cell: any) => cell.cell_type === 'audio_interaction').length || 0,
           gridConfig: gameData.game_cells?.map((cell: any) => ({
             x: cell.column_index,
             y: cell.row_index,
             color: getCellColor(cell.cell_type),
-            isInformative: cell.cell_type === 'informative',
+            cellType: cell.cell_type as any,
             content: cell.content || '',
             imageUrl: cell.image_url || '',
-            isPath: cell.cell_type === 'circuit',
+            audioUrl: cell.audio_url || '',
             pathOrder: 0,
             connections: []
           })) || [],
           informativeCells: gameData.game_cells
-            ?.filter((cell: any) => cell.cell_type === 'informative')
+            ?.filter((cell: any) => cell.cell_type === 'audio_interaction')
             ?.map((cell: any) => ({
               id: cell.id,
               content: cell.content || '',
-              imageUrl: cell.image_url || ''
+              imageUrl: cell.image_url || '',
+              audioUrl: cell.audio_url || ''
             })) || [],
           createdAt: new Date(gameData.created_at)
         }));
@@ -74,6 +76,7 @@ export const useGames = () => {
           rows: 5,
           columns: 5,
           max_moves: gameData.maxMoves || 10,
+          health: gameData.health || 3,
           is_published: false
         })
         .select()
@@ -155,7 +158,5 @@ function getCellColor(cellType: string): string {
 }
 
 function getCellType(cell: any): CellType {
-  if (cell.isInformative) return 'informative';
-  if (cell.isPath) return 'circuit';
-  return 'obstacle';
+  return cell.cellType || 'interaction';
 }

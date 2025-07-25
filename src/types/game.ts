@@ -1,12 +1,14 @@
 
+export type CellType = 'start' | 'end' | 'audio_interaction' | 'interaction' | 'obstacle';
+
 export interface Cell {
   x: number;
   y: number;
   color: string;
-  isInformative: boolean;
-  content: string;
-  imageUrl: string;
-  isPath: boolean;
+  cellType: CellType;
+  content?: string;
+  imageUrl?: string;
+  audioUrl?: string;
   pathOrder: number;
   connections: number[];
 }
@@ -22,6 +24,7 @@ export interface Game {
   id: string;
   name: string;
   maxMoves: number;
+  health: number;
   totalCircuitCells: number;
   totalInfoCells: number;
   gridConfig: Cell[];

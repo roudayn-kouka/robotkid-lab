@@ -11,7 +11,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
 import AuthPage from "./pages/AuthPage";
 import Index from "./pages/Index";
-import CreateGame from "./pages/CreateGame";
+import NewCreateGame from "./pages/NewCreateGame";
 import GameLibrary from "./pages/GameLibrary";
 import Analytics from "./pages/Analytics";
 import TeacherDashboard from "./pages/TeacherDashboard";
@@ -39,7 +39,7 @@ const App = () => (
             } />
             <Route path="/create-game" element={
               <ProtectedRoute requiredRole="admin">
-                <CreateGame />
+                <NewCreateGame />
               </ProtectedRoute>
             } />
             <Route path="/games" element={
