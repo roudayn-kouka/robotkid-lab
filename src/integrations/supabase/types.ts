@@ -680,6 +680,13 @@ export type Database = {
         }
         Returns: string
       }
+      validate_role_assignment: {
+        Args: {
+          target_user_id: string
+          new_role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "teacher" | "parent"
