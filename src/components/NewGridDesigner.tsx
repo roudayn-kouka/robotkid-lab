@@ -225,7 +225,7 @@ export const NewGridDesigner: React.FC<NewGridDesignerProps> = ({
         </CardHeader>
         <CardContent>
           <div 
-            className="grid gap-1 p-4 bg-secondary rounded-lg"
+            className="grid gap-0 p-2 bg-secondary rounded-lg"
             style={{ 
               gridTemplateColumns: `repeat(${dimensions.columns}, 1fr)`,
               gridTemplateRows: `repeat(${dimensions.rows}, 1fr)`
@@ -240,27 +240,43 @@ export const NewGridDesigner: React.FC<NewGridDesignerProps> = ({
                   <div
                     key={`${col}-${row}`}
                     className={`
-                      w-12 h-12 border-2 rounded cursor-pointer transition-all
-                      ${isSelected ? 'border-primary ring-2 ring-primary/20' : 'border-gray-300'}
-                      hover:border-primary/50
+                      w-20 h-20 border border-gray-400 cursor-pointer transition-all relative
+                      ${isSelected ? 'border-primary border-2 ring-2 ring-primary/20' : ''}
+                      hover:border-primary/70 hover:border-2
                     `}
-                    style={{ backgroundColor: cellData.color }}
+                    style={{ backgroundColor: cellData.imageUrl ? 'transparent' : cellData.color }}
                     onClick={() => handleCellClick(col, row)}
                     onDragOver={handleCellDragOver}
                     onDrop={(e) => handleCellDrop(e, col, row)}
                   >
-                    {cellData.imageUrl && (
+                    {cellData.imageUrl && cellData.cellType !== 'start' && cellData.cellType !== 'end' && (
                       <img 
                         src={cellData.imageUrl} 
                         alt="Cell content" 
-                        className="w-full h-full object-cover rounded"
+                        className="w-full h-full object-cover"
                       />
                     )}
                     {cellData.cellType === 'start' && (
-                      <div className="w-full h-full flex items-center justify-center text-white font-bold">S</div>
+                      <div className="w-full h-full flex items-center justify-center text-white font-bold text-lg bg-green-500">
+                        DÉPART
+                      </div>
                     )}
                     {cellData.cellType === 'end' && (
-                      <div className="w-full h-full flex items-center justify-center text-white font-bold">E</div>
+                      <div className="w-full h-full flex items-center justify-center text-white font-bold text-lg bg-red-500">
+                        FIN
+                      </div>
+                    )}
+                    {!cellData.imageUrl && cellData.cellType !== 'start' && cellData.cellType !== 'end' && (
+                      <div className="w-full h-full flex items-center justify-center text-xs text-gray-600">
+                        {cellData.cellType === 'interaction' && 'INT'}
+                        {cellData.cellType === 'audio_interaction' && 'AUDIO'}
+                        {cellData.cellType === 'obstacle' && 'OBST'}
+                      </div>
+                    )}
+                    {cellData.content && !cellData.imageUrl && cellData.cellType !== 'start' && cellData.cellType !== 'end' && (
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1 truncate">
+                        {cellData.content}
+                      </div>
                     )}
                   </div>
                 );
