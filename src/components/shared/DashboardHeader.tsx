@@ -50,12 +50,12 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           <div className="flex items-center space-x-3">
             <img 
               src="/lovable-uploads/978af6a0-f975-4397-b2b1-1dffd0019eda.png" 
-              alt="RobotKid Lab" 
+              alt="RoboKid Lab" 
               className="h-8 w-8" 
             />
             <div>
               <span className="font-bold text-xl text-violet">
-                RobotKid Lab - {getUserTypeLabel()}
+                RoboKid Lab - {getUserTypeLabel()}
               </span>
               {subtitle && (
                 <p className="text-sm text-gray-600">{subtitle}</p>

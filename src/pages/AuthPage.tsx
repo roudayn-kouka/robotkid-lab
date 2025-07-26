@@ -253,7 +253,7 @@ const AuthPage = () => {
             <Card className="backdrop-blur-sm bg-white/95 shadow-2xl border-0">
               <CardHeader className="space-y-1 pb-6">
                 <div className="flex items-center justify-center mb-4">
-                  <img src="/lovable-uploads/978af6a0-f975-4397-b2b1-1dffd0019eda.png" alt="RobotKid Lab" className="h-12 w-12" />
+                  <img src="/lovable-uploads/978af6a0-f975-4397-b2b1-1dffd0019eda.png" alt="RoboKid Lab" className="h-12 w-12" />
                 </div>
                 <CardTitle className="text-2xl text-center text-gray-800">
                   Mot de passe oublié
@@ -313,7 +313,7 @@ const AuthPage = () => {
           <Card className="backdrop-blur-sm bg-white/95 shadow-2xl border-0">
             <CardHeader className="space-y-1 pb-6">
               <div className="flex items-center justify-center mb-4">
-                <img src="/lovable-uploads/978af6a0-f975-4397-b2b1-1dffd0019eda.png" alt="RobotKid Lab" className="h-12 w-12" />
+                <img src="/lovable-uploads/978af6a0-f975-4397-b2b1-1dffd0019eda.png" alt="RoboKid Lab" className="h-12 w-12" />
               </div>
               <CardTitle className="text-2xl text-center text-gray-800">
                 {isLogin ? 'Bienvenue' : 'Créer un compte'}

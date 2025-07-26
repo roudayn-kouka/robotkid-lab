@@ -102,7 +102,7 @@ const LandingPage = () => {
   const testimonials = [{
     name: "Marie Dubois",
     role: "Enseignante CE2",
-    content: "RobotKid Lab a transformé ma façon d'enseigner. Les enfants sont plus engagés et apprennent en s'amusant !",
+    content: "RoboKid Lab a transformé ma façon d'enseigner. Les enfants sont plus engagés et apprennent en s'amusant !",
     rating: 5
   }, {
     name: "Pierre Martin",
@@ -129,7 +129,7 @@ const LandingPage = () => {
           }} transition={{
             duration: 0.5
           }} className="flex items-center space-x-3">
-              <img src="/lovable-uploads/978af6a0-f975-4397-b2b1-1dffd0019eda.png" alt="RobotKid Lab" className="h-10 w-10" />
+              <img src="/lovable-uploads/978af6a0-f975-4397-b2b1-1dffd0019eda.png" alt="RoboKid Lab" className="h-10 w-10" />
               <span className="text-2xl font-bold text-violet">RoboKid Lab</span>
             </motion.div>
             
@@ -211,7 +211,7 @@ const LandingPage = () => {
             duration: 0.8,
             delay: 0.2
           }} className="relative">
-              <img src="/lovable-uploads/b9c7e286-56d6-44fe-8adc-98a77b98a2b9.png" alt="Enfants utilisant RobotKid Lab" className="rounded-2xl shadow-2xl w-full hover:shadow-3xl transition-shadow duration-500" />
+              <img src="/lovable-uploads/b9c7e286-56d6-44fe-8adc-98a77b98a2b9.png" alt="Enfants utilisant RoboKid Lab" className="rounded-2xl shadow-2xl w-full hover:shadow-3xl transition-shadow duration-500" />
             </motion.div>
           </div>
         </div>
@@ -286,7 +286,7 @@ const LandingPage = () => {
           }} transition={{
             duration: 0.8
           }}>
-              <img src="/lovable-uploads/7a127ee6-c9ea-49c0-8ca3-1c5c25640131.png" alt="Interface RobotKid Lab" className="rounded-2xl shadow-xl w-full hover:shadow-2xl transition-shadow duration-500" />
+              <img src="/lovable-uploads/7a127ee6-c9ea-49c0-8ca3-1c5c25640131.png" alt="Interface RoboKid Lab" className="rounded-2xl shadow-xl w-full hover:shadow-2xl transition-shadow duration-500" />
             </motion.div>
             <motion.div initial="hidden" whileInView="visible" viewport={{
             once: true
@@ -450,7 +450,7 @@ const LandingPage = () => {
       </motion.section>
 
       {/* Footer */}
-      <footer className="text-white py-12 px-4 bg-cyan-50">
+      <footer className="bg-gradient-to-br from-violet/10 via-bleu/10 to-orange/10 py-20 px-4">
         <div className="container mx-auto">
           <motion.div initial={{
           opacity: 0,
@@ -464,14 +464,14 @@ const LandingPage = () => {
           duration: 0.6
         }} className="text-center">
             <div className="flex items-center justify-center space-x-3 mb-4">
-              <img src="/lovable-uploads/978af6a0-f975-4397-b2b1-1dffd0019eda.png" alt="RobotKid Lab" className="h-8 w-8" />
-              <span className="text-2xl font-bold text-slate-900">RobotKid Lab</span>
+              <img src="/lovable-uploads/978af6a0-f975-4397-b2b1-1dffd0019eda.png" alt="RoboKid Lab" className="h-8 w-8" />
+              <span className="text-2xl font-bold text-slate-900">RoboKid Lab</span>
             </div>
             <p className="mb-4 text-gray-700">
               L'apprentissage par le jeu pour une éducation moderne et efficace
             </p>
             <p className="text-sm text-gray-700">
-              © 2024 RobotKid Lab. Tous droits réservés.
+              © 2024 RoboKid Lab. Tous droits réservés.
             </p>
           </motion.div>
         </div>

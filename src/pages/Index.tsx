@@ -77,7 +77,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet/5 via-bleu/5 to-orange/5">
       <DashboardHeader 
-        title="RobotKid Lab - Administration" 
+        title="RoboKid Lab - Administration" 
         subtitle="Tableau de bord administrateur"
         userType="admin" 
       />
@@ -89,7 +89,7 @@ const Index = () => {
             Bienvenue, Administrateur !
           </h1>
           <p className="text-gray-600">
-            Voici un aperçu de l'activité de votre plateforme RobotKid Lab.
+            Voici un aperçu de l'activité de votre plateforme RoboKid Lab.
           </p>
         </div>
 

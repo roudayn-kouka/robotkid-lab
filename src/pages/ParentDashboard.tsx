@@ -80,7 +80,7 @@ const ParentDashboard = () => {
     <div className="min-h-screen bg-gradient-to-br from-violet/5 via-bleu/5 to-orange/5">
       <DashboardHeader 
         title="Tableau de bord Parent" 
-        subtitle="Suivez les progrès de vos enfants avec RobotKid Lab"
+        subtitle="Suivez les progrès de vos enfants avec RoboKid Lab"
         userType="parent" 
       />
 
