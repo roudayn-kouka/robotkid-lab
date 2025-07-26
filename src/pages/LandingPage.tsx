@@ -425,9 +425,7 @@ const LandingPage = () => {
         }} transition={{
           duration: 0.6,
           delay: 0.2
-        }} className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Rejoignez des milliers d'enseignants et de parents qui font confiance à RobotKid Lab
-          </motion.p>
+        }} className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">Rejoignez des milliers d'enseignants et de parents qui font confiance à RoboKid Lab</motion.p>
           <motion.div initial={{
           opacity: 0,
           y: 30
