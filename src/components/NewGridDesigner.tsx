@@ -23,7 +23,7 @@ export const NewGridDesigner: React.FC<NewGridDesignerProps> = ({
 }) => {
   const [selectedCell, setSelectedCell] = useState<{ x: number; y: number } | null>(null);
   const [draggedTileType, setDraggedTileType] = useState<CellType | null>(null);
-  const { uploadFile } = useFileUpload();
+  const { uploadFile, uploading } = useFileUpload();
 
   const getCellData = (x: number, y: number): Cell => {
     const existingCell = cells.find(cell => cell.x === x && cell.y === y);
@@ -90,16 +90,9 @@ export const NewGridDesigner: React.FC<NewGridDesignerProps> = ({
   const handleImageUpload = async (file: File) => {
     if (!selectedCell) return;
     
-    try {
-      const result = await uploadFile(file, 'game-assets');
-      if (result.url) {
-        onCellUpdate(selectedCell.x, selectedCell.y, { imageUrl: result.url });
-        toast.success('Image uploadée avec succès');
-      } else {
-        throw new Error(result.error);
-      }
-    } catch (error) {
-      toast.error('Erreur lors de l\'upload de l\'image');
+    const result = await uploadFile(file, 'game-assets');
+    if (result.url) {
+      onCellUpdate(selectedCell.x, selectedCell.y, { imageUrl: result.url });
     }
   };
 
@@ -334,17 +327,26 @@ export const NewGridDesigner: React.FC<NewGridDesignerProps> = ({
                 <Input
                   type="file"
                   accept="image/*"
+                  disabled={uploading}
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) handleImageUpload(file);
                   }}
                 />
-                {selectedCellData.imageUrl && (
-                  <img 
-                    src={selectedCellData.imageUrl} 
-                    alt="Preview" 
-                    className="mt-2 w-20 h-20 object-cover rounded border"
-                  />
+                {uploading && (
+                  <div className="mt-2 text-sm text-blue-600">
+                    Upload en cours...
+                  </div>
+                )}
+                {selectedCellData.imageUrl && !uploading && (
+                  <div className="mt-2">
+                    <img 
+                      src={selectedCellData.imageUrl} 
+                      alt="Preview" 
+                      className="w-20 h-20 object-cover rounded border"
+                    />
+                    <p className="text-xs text-green-600 mt-1">Image ajoutée avec succès</p>
+                  </div>
                 )}
               </div>
             )}

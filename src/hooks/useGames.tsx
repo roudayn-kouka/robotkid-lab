@@ -77,7 +77,9 @@ export const useGames = () => {
           columns: 5,
           max_moves: gameData.maxMoves || 10,
           health: gameData.health || 3,
-          is_published: false
+          is_published: false,
+          chapter_index: 1,
+          level_index: 1
         })
         .select()
         .single();

@@ -156,7 +156,6 @@ export type Database = {
           game_id: string | null
           id: string
           image_url: string | null
-          is_obstacle: boolean | null
           row_index: number
         }
         Insert: {
@@ -168,7 +167,6 @@ export type Database = {
           game_id?: string | null
           id?: string
           image_url?: string | null
-          is_obstacle?: boolean | null
           row_index: number
         }
         Update: {
@@ -180,7 +178,6 @@ export type Database = {
           game_id?: string | null
           id?: string
           image_url?: string | null
-          is_obstacle?: boolean | null
           row_index?: number
         }
         Relationships: [
@@ -246,6 +243,7 @@ export type Database = {
       }
       games: {
         Row: {
+          chapter_index: number
           columns: number
           created_at: string | null
           creator_id: string | null
@@ -253,12 +251,14 @@ export type Database = {
           health: number
           id: string
           is_published: boolean | null
+          level_index: number
           max_moves: number
           name: string
           rows: number
           updated_at: string | null
         }
         Insert: {
+          chapter_index: number
           columns?: number
           created_at?: string | null
           creator_id?: string | null
@@ -266,12 +266,14 @@ export type Database = {
           health?: number
           id?: string
           is_published?: boolean | null
+          level_index: number
           max_moves?: number
           name: string
           rows?: number
           updated_at?: string | null
         }
         Update: {
+          chapter_index?: number
           columns?: number
           created_at?: string | null
           creator_id?: string | null
@@ -279,6 +281,7 @@ export type Database = {
           health?: number
           id?: string
           is_published?: boolean | null
+          level_index?: number
           max_moves?: number
           name?: string
           rows?: number
