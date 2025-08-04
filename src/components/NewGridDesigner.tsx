@@ -23,6 +23,7 @@ export const NewGridDesigner: React.FC<NewGridDesignerProps> = ({
 }) => {
   const [selectedCell, setSelectedCell] = useState<{ x: number; y: number } | null>(null);
   const [draggedTileType, setDraggedTileType] = useState<CellType | null>(null);
+  const [imageKey, setImageKey] = useState(0);
   const { uploadFile, uploading } = useFileUpload();
 
   const getCellData = (x: number, y: number): Cell => {
@@ -92,7 +93,9 @@ export const NewGridDesigner: React.FC<NewGridDesignerProps> = ({
     
     const result = await uploadFile(file, 'game-assets');
     if (result.url) {
-      onCellUpdate(selectedCell.x, selectedCell.y, { imageUrl: result.url });
+      const imageUrl = `${result.url}?t=${Date.now()}`;
+      onCellUpdate(selectedCell.x, selectedCell.y, { imageUrl });
+      setImageKey(prev => prev + 1);
     }
   };
 
@@ -218,7 +221,7 @@ export const NewGridDesigner: React.FC<NewGridDesignerProps> = ({
         </CardHeader>
         <CardContent>
           <div 
-            className="grid gap-0 p-2 bg-secondary rounded-lg"
+            className="grid gap-0 bg-secondary rounded-lg p-1"
             style={{ 
               gridTemplateColumns: `repeat(${dimensions.columns}, 1fr)`,
               gridTemplateRows: `repeat(${dimensions.rows}, 1fr)`
@@ -231,11 +234,11 @@ export const NewGridDesigner: React.FC<NewGridDesignerProps> = ({
                 
                 return (
                   <div
-                    key={`${col}-${row}`}
+                    key={`${col}-${row}-${imageKey}`}
                     className={`
-                      w-20 h-20 border border-gray-400 cursor-pointer transition-all relative
-                      ${isSelected ? 'border-primary border-2 ring-2 ring-primary/20' : ''}
-                      hover:border-primary/70 hover:border-2
+                      w-16 h-16 cursor-pointer transition-all relative
+                      ${isSelected ? 'ring-4 ring-primary ring-inset z-10' : ''}
+                      hover:ring-2 hover:ring-primary/50
                     `}
                     style={{ backgroundColor: cellData.imageUrl ? 'transparent' : cellData.color }}
                     onClick={() => handleCellClick(col, row)}
@@ -338,16 +341,16 @@ export const NewGridDesigner: React.FC<NewGridDesignerProps> = ({
                     Upload en cours...
                   </div>
                 )}
-                {selectedCellData.imageUrl && !uploading && (
-                  <div className="mt-2">
-                    <img 
-                      src={selectedCellData.imageUrl} 
-                      alt="Preview" 
-                      className="w-20 h-20 object-cover rounded border"
-                    />
-                    <p className="text-xs text-green-600 mt-1">Image ajoutée avec succès</p>
-                  </div>
-                )}
+                    {selectedCellData.imageUrl && !uploading && (
+                      <div className="mt-2">
+                        <img 
+                          src={`${selectedCellData.imageUrl}?t=${Date.now()}`} 
+                          alt="Preview" 
+                          className="w-20 h-20 object-cover rounded border"
+                        />
+                        <p className="text-xs text-green-600 mt-1">Image ajoutée avec succès</p>
+                      </div>
+                    )}
               </div>
             )}
           </CardContent>

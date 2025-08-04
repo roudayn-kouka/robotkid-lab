@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 export const useFileUpload = () => {
   const [uploading, setUploading] = useState(false);
@@ -12,32 +12,20 @@ export const useFileUpload = () => {
       // Check if user is authenticated
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast({
-          title: "Erreur d'authentification",
-          description: "Vous devez être connecté pour uploader des images",
-          variant: "destructive",
-        });
+        toast.error("Vous devez être connecté pour uploader des images");
         return { url: null, error: new Error('User not authenticated') };
       }
 
       // Validate file type
       const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
       if (!allowedTypes.includes(file.type)) {
-        toast({
-          title: "Type de fichier non supporté",
-          description: "Veuillez uploader une image (JPG, PNG, GIF, ou WebP)",
-          variant: "destructive",
-        });
+        toast.error("Veuillez uploader une image (JPG, PNG, GIF, ou WebP)");
         return { url: null, error: new Error('Invalid file type') };
       }
 
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: "Fichier trop volumineux",
-          description: "La taille maximale autorisée est de 5MB",
-          variant: "destructive",
-        });
+        toast.error("La taille maximale autorisée est de 5MB");
         return { url: null, error: new Error('File too large') };
       }
 
@@ -51,11 +39,7 @@ export const useFileUpload = () => {
 
       if (uploadError) {
         console.error('Upload error details:', uploadError);
-        toast({
-          title: "Erreur lors de l'upload",
-          description: uploadError.message || "Une erreur est survenue lors de l'upload",
-          variant: "destructive",
-        });
+        toast.error(uploadError.message || "Une erreur est survenue lors de l'upload");
         throw uploadError;
       }
 
@@ -63,20 +47,13 @@ export const useFileUpload = () => {
         .from(bucket)
         .getPublicUrl(filePath);
 
-      toast({
-        title: "Image uploadée avec succès",
-        description: "L'image a été ajoutée à la cellule",
-      });
+      toast.success("Image uploadée avec succès");
 
       return { url: data.publicUrl, error: null };
     } catch (error) {
       console.error('Error uploading file:', error);
       const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
-      toast({
-        title: "Erreur lors de l'upload",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      toast.error(`Erreur lors de l'upload: ${errorMessage}`);
       return { url: null, error };
     } finally {
       setUploading(false);
