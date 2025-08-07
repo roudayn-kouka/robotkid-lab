@@ -93,9 +93,14 @@ export const NewGridDesigner: React.FC<NewGridDesignerProps> = ({
     
     const result = await uploadFile(file, 'game-assets');
     if (result.url) {
-      const imageUrl = `${result.url}?t=${Date.now()}`;
-      onCellUpdate(selectedCell.x, selectedCell.y, { imageUrl });
+      // Force image refresh with timestamp
+      onCellUpdate(selectedCell.x, selectedCell.y, { imageUrl: result.url });
       setImageKey(prev => prev + 1);
+      
+      // Force re-render after a short delay to ensure image loads
+      setTimeout(() => {
+        setImageKey(prev => prev + 1);
+      }, 100);
     }
   };
 
